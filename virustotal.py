@@ -49,7 +49,7 @@ response1 = requests.get(url2, headers=headers)
 json_data = json.loads(response1.text)
 print(json_data)
 
-filename = "json_data.json"
+filename = "virustotal_output.json"
 
 with open(filename, "w") as file_object:
     json.dump(json_data, file_object)
