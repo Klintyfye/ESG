@@ -6,7 +6,7 @@ import pathlib
 import os
 
 
-path = "/Users/mossabkadhom/Desktop/projekt/adblock.crx"
+path = "/Users/mossabkadhom/Desktop/projekt/claroread.crx"
 #os.path.dirname(os.path.abspath(__file__))
 
 url = "https://www.virustotal.com/api/v3/files"
@@ -56,7 +56,7 @@ with open(filename, "w") as file_object:
     json.dump(json_data, file_object)
 
 #if file is queued
-"""
+
 url3 = "https://www.virustotal.com/api/v3/files/"+stringedRes+"/analyse"
 
 headers2 = {
@@ -64,7 +64,6 @@ headers2 = {
     "x-apikey": "51bff97d51ac2996b0b64155402f55cc8960cdfbfcd3f5361eff4fd9f2dc65b2"
 }
 
-response2 = requests.post(url, headers=headers)
+response2 = requests.post(url3, headers=headers)
 
-print(response.text)
-"""
+print(response2.text)
