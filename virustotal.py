@@ -59,16 +59,17 @@ headers1 = {
 
 response1 = requests.get(url2, headers=headers)
 
-#print(response1.text)
+print(response1.text)
 
 
-json_data = json.loads(response1.text)
-print(json_data)
+#json_data = json.loads(response1.text)
+#print(json_data)
 
-filename = "virustotal_output.json"
 
-with open(filename, "w") as file_object:
-    json.dump(json_data, file_object)
+#filename = "virustotal_output.json"
+
+#with open(filename, "w") as file_object:
+    #json.dump(json_data, file_object)
 
 #if file is queued
 """
