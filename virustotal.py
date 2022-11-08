@@ -1,11 +1,10 @@
 from fileinput import filename
 from hashlib import sha256
-import string
 import requests
 import json
 import time
 
-path = "/Users/mossabkadhom/Desktop/Projekt/claroread.crx"
+path = "/Users/mossabkadhom/Desktop/Projekt/adblock.crx"
 
 def url_for_large_file():
 
@@ -74,19 +73,12 @@ def if_file_queued():
             break
         print("Process is in queue, please wait...")
         time.sleep(5) 
-            
-        
-
 
     filename = "virustotal_output.json"
     sha256_value = info["meta"]["file_info"]["sha256"]
     #print(sha256_value)
     with open(filename, "w") as file_object:
         json.dump(info, file_object)
-        
-
-    
-        
     #time.sleep(3)
     return sha256_value
     
