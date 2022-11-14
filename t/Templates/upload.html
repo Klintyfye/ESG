@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"> 
+    <link rel="stylesheet" href="{{url_for('static', filename='styles.css')}}"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Flask Multiple Files Upload Example</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+    <b1>Search for an extension or submit an extension file to scan</b1> 
+    <!-- <h2>Select file to upload</h2> -->
+    <p>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+    </p>
+
+    <div class="card">
+        <div class="fileupload">
+            <b>Select a extension (crx) file</b>
+            <form method="post" action="/" enctype="multipart/form-data">
+                <input type="file" name="crxfile" >
+                <input type="submit" value="Submit">
+            
+            </form>
+        </div>
+        <b>Search for extensions in the Chrome Web Store</b>
+        <div class="searchbar">
+            <form  action="/search" method="post">
+                <input type="text" placeholder="Search.." name="search">
+                <button type="submit"><i class="fa fa-search"></i></button>
+                <output id = 'results'>
+                    {% if content %}
+                    {% for i in content %}
+                    <image src={{ i[2] }}></image>  
+                    {% endfor %}
+                    {% endif %}
+                    <!-- <img src={{content}}  /> -->
+                </output>
+            </form>
+        </div>
+        <p>
+           
+            </p>
+        <!-- <pre>{{content}}</pre> -->
+        <!-- <div class="images">
+            <form  action="/search" method="post">
+                <input type="file"  name="image">
+
+            </form>
+        </div> -->
+    </div>
+    
+    <!-- multiple="" autocomplete="off" directory="" webkitdirectory="" mozdirectory="" -->
+</body>
+</html>
