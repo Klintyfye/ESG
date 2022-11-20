@@ -4,7 +4,10 @@ import requests
 import json
 import time
 
-path = "/Users/mossabkadhom/Desktop/Projekt/adblock.crx"
+
+#path = "C:/Users/saifa/OneDrive/Dokument/DV1512/projekt_code/flask/uploadeZip.zip"
+# path = "/mnt/c/Users/saifa/OneDrive/Dokument/DV1512/projekt_code/flask/uploadeZip.zip"
+
 
 def url_for_large_file():
 
@@ -24,7 +27,7 @@ def url_for_large_file():
     return refined_url
     
 
-def url_for_upload():
+def url_for_upload(path):
     url_for_upload = url_for_large_file()
     files = {"file": open(path, "rb")}
     second_header = {
@@ -53,8 +56,8 @@ def url_for_upload():
     return stringedRes
     
 
-def url_for_analysis_report():
-    rest_of_string = url_for_upload()
+def url_for_analysis_report(path):
+    rest_of_string = url_for_upload(path)
     url_for_analysis_report = "https://www.virustotal.com/api/v3/analyses/"+rest_of_string
     fourth_header = {
         "accept": "application/json",
@@ -64,28 +67,27 @@ def url_for_analysis_report():
     json_data = json.loads(third_response.text)
     return json_data
     
-def if_file_queued():
+def if_file_queued(path):
     switch = True
     while switch:
-        info = url_for_analysis_report()
+        info = url_for_analysis_report(path)
         if info["data"]["attributes"]["status"] == "completed":
             switch = False
             break
         print("Process is in queue, please wait...")
         time.sleep(5) 
-
     filename = "virustotal_output.json"
     sha256_value = info["meta"]["file_info"]["sha256"]
     #print(sha256_value)
     with open(filename, "w") as file_object:
-        json.dump(info, file_object)
+        json.dump(info, file_object) 
     #time.sleep(3)
     return sha256_value
     
     
 
-def url_for_analysis_report_from_hash():
-    sha256 = if_file_queued()
+def url_for_analysis_report_from_hash(path):
+    sha256 = if_file_queued(path)
     url_for_analysis_hash = "https://www.virustotal.com/api/v3/files/"+sha256
     fourth_header = {
         "accept": "application/json",
@@ -100,9 +102,10 @@ def url_for_analysis_report_from_hash():
        json.dump(json_data1, file_object)
 
 
-if __name__ == "__main__":
+def virustotal( path):
+    path = path
     url_for_large_file()
-    url_for_upload()
-    url_for_analysis_report()
-    url_for_analysis_report_from_hash()
-    if_file_queued()
+    url_for_upload(path)
+    url_for_analysis_report(path)
+    url_for_analysis_report_from_hash(path)
+    if_file_queued(path)
