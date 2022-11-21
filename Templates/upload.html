@@ -17,7 +17,6 @@
             <form method="post" action="/" enctype="multipart/form-data">
                 <input type="file" name="crxfile" >
                 <input type="submit" value="Submit">
-            
             </form>
         </div>
         <b>Search for extensions in the Chrome Web Store</b>
@@ -25,42 +24,31 @@
             <form  action="/search" method="post">
                 <input type="text" placeSubmitholder="Search.." name="search" >
                 <button type="submit" class="button1"> <i class="fa fa-search" aria-label="Search"  > </i> </button>
-                <table>
                     <div class='api_results'>
                         {% if content %}
                         {% for i in content %}
                         <div class="results">
-                            <form action="/analys" method="post" id="analys">
+                            <form action="/analyze" method="post" id="analyze">
                                 <image src={{ i[2] }}></image>
-                                <h2>{{ i[1] }}  <br/> 
-                                <input name='extension_name' value ={{ i[6] }} type="hidden" class="button2" placeSubmitholder="button" onclick="myFunction('{{ i[6] }}')">
-                                <button value ={{ i[6] }} class= 'button2' >submit </button>
-                                <br/> 
-                                {{ i[5] }}\5  </h2>
+                                <h2>
+                                    {{ i[1] }}  
+                                    <br/>
+                                        <input id = 'extension_name' name='extension_name' value= {{ i[0] }} type="hidden" class="button2">
+                                        <button type="button" class= 'button2' onclick="myFunction()"> select</button>
+                                    <br/> 
+                                    {{ i[5] }}\5  
+                            </h2>
                             </form>
                         {% endfor %}
                         {% endif %}
                         <script type="text/javascript">
-                            // function myFunction() {
-                            //     document.getElementById('analys').submit()
-
-                            // }
+                            function myFunction() {
+                                document.getElementById('analyze').submit();
+                            }
                         </script>
                     </div>
-                </table>
-                    <!-- <img src={{content}}  /> -->
             </form>
         </div>
-        <p>
-           
-            </p>
-        <!-- <pre>{{content}}</pre> -->
-        <!-- <div class="images">
-            <form  action="/search" method="post">
-                <input type="file"  name="image">
-
-            </form>
-        </div> -->
     </div>
     <p>
         {% with messages = get_flashed_messages() %}
@@ -73,8 +61,5 @@
         {% endif %}
         {% endwith %}
         </p>
-    <!-- multiple="" autocomplete="off" directory="" webkitdirectory="" mozdirectory="" -->
-</body>
 </html>
 
-<!-- placeSubmitholder = <button type="button" class="button2" value = 'select' id="select" onclick="myFunction()"> </button> -->
