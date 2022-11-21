@@ -68,33 +68,29 @@ def search():
         if not extension_name:
             flash('No input')
             return redirect('/')
-
         extension_ifo_list = api.get_item(extension_name)
-        for i in range(len(extension_ifo_list)):
-            name = extension_ifo_list[i][0].split('/')[-1]
-            extension_ifo_list[i].append(name)
-        print('\n')
+       
         return render_template('upload.html', content = extension_ifo_list )
 
-# @app.route('/analyze', methods=['POST', 'GET'])
-# def analys():
-#      if request.method == 'POST':
-#         extension_name = request.form.get('extension_name')
-#         print(extension_name)
-#         crx_downloader.download_crx(extension_name)
-#         name = extension_name
-#         # print(name[5])
-#         path = os.path.join(app.config['UPLOAD_CRX_FOLDER'], name[5]+'.crx')
-#         with ZipFile(path) as crx_unzip:
-#         # Extracting all the members of the zip 
-#         # into a specific location.
-#             crx_unzip.extractall(
-#                 path = os.path.join(app.config['UPLOAD_FOLDER'], name[5]+'.crx'))
-#         path2 = os.path.join(app.config['UPLOAD_FOLDER'], name[5]+'.crx')
-#         # print(path2)
-#         virustotal.virustotal(path)
-#         retireJS.retireJS(path2)
-#         flash('File successfully uploaded')
+@app.route('/analyze', methods=['POST', 'GET'])
+def analys():
+    if request.method == 'POST':
+        extension_name = request.form.get('extension_name')
+        print(extension_name)
+        crx_downloader.download_crx(extension_name)
+        name = extension_name.split('/')[-2]
+        path = os.path.join(app.config['UPLOAD_CRX_FOLDER'], name+'.crx')
+        with ZipFile(path) as crx_unzip:
+        # Extracting all the members of the zip 
+        # into a specific location.
+            crx_unzip.extractall(
+                path = os.path.join(app.config['UPLOAD_FOLDER'], name+'.crx'))
+        path2 = os.path.join(app.config['UPLOAD_FOLDER'], name+'.crx')
+        # print(path2)
+        virustotal.virustotal(path)
+        retireJS.retireJS(path2)
+        flash('File successfully uploaded')
+        return redirect('/')
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1',port=5000,debug=True,threaded=True)
