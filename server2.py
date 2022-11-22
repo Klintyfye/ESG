@@ -7,11 +7,11 @@ import retireJS
 import virustotal 
 import api 
 import crx_downloader
-
+import time
 
 app=Flask(__name__)
-app.secret_key = "secret key" # for encrypting the sessions
-#It will allow below 16MB contents only, you can change it
+app.secret_key = "juvsnpqb##?+`okojpj##¤¤%&#pakia" # for encrypting the sessions
+#It will allow below 250MB contents only, you can change it
 app.config['MAX_CONTENT_LENGTH'] = 250 * 1024 * 1024
 path = os.getcwd()
 # file Upload
@@ -46,19 +46,24 @@ def upload_file():
         if not file:
             flash('No file uploaded!')
             return redirect('/')
+        start_time = time.time()
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_CRX_FOLDER'], filename))
-        path = os.path.join(app.config['UPLOAD_CRX_FOLDER'], filename)
-        print(path)
-        with ZipFile(path) as crx_unzip:
-        # Extracting all the members of the zip 
-        # into a specific location.
-            crx_unzip.extractall(
-                path = os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        path2 = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        virustotal.virustotal(path)
-        retireJS.retireJS(path2)
+            path = os.path.join(app.config['UPLOAD_CRX_FOLDER'], filename)
+            with ZipFile(path) as crx_unzip:
+            # Extracting all the members of the zip 
+            # into a specific location.
+                crx_unzip.extractall(
+                    path = os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            path2 = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            virustotal.virustotal(path)
+            retireJS.retireJS(path2)
+        else:
+            flash('Only crx files')
+            return redirect('/')
+        endtime = (time.time() - start_time)
+        print(endtime)
         flash('File successfully uploaded')
         return redirect('/')
 @app.route('/search', methods=['POST', 'GET'])
@@ -69,28 +74,40 @@ def search():
             flash('No input')
             return redirect('/')
         extension_ifo_list = api.get_item(extension_name)
-       
+        if extension_ifo_list == []:
+            flash('No extensions found')
+            return redirect('/')
+        for i in range(len(extension_ifo_list)):
+            extension_ifo_list[i][5] = round(extension_ifo_list[i][5],1)
+
         return render_template('upload.html', content = extension_ifo_list )
 
 @app.route('/analyze', methods=['POST', 'GET'])
-def analys():
-    if request.method == 'POST':
+def analyze():
+     if request.method == 'POST':
+        start_time = time.time()
         extension_name = request.form.get('extension_name')
-        print(extension_name)
-        crx_downloader.download_crx(extension_name)
         name = extension_name.split('/')[-2]
-        path = os.path.join(app.config['UPLOAD_CRX_FOLDER'], name+'.crx')
-        with ZipFile(path) as crx_unzip:
-        # Extracting all the members of the zip 
-        # into a specific location.
-            crx_unzip.extractall(
-                path = os.path.join(app.config['UPLOAD_FOLDER'], name+'.crx'))
-        path2 = os.path.join(app.config['UPLOAD_FOLDER'], name+'.crx')
-        # print(path2)
-        virustotal.virustotal(path)
-        retireJS.retireJS(path2)
+        if not os.path.isfile(os.path.join(app.config['UPLOAD_CRX_FOLDER'], name+'.crx')):
+            crx_downloader.download_crx(extension_name)
+            path = os.path.join(app.config['UPLOAD_CRX_FOLDER'], name+'.crx')
+            with ZipFile(path) as crx_unzip:
+            # Extracting all the members of the zip 
+            # into a specific location.
+                crx_unzip.extractall(
+                    path = os.path.join(app.config['UPLOAD_FOLDER'], name+'.crx'))
+            path2 = os.path.join(app.config['UPLOAD_FOLDER'], name+'.crx')
+            virustotal.virustotal(path)
+            retireJS.retireJS(path2)
+        else:
+            path = os.path.join(app.config['UPLOAD_CRX_FOLDER'], name+'.crx')
+            path2 = os.path.join(app.config['UPLOAD_FOLDER'], name+'.crx')
+            virustotal.virustotal(path)
+            retireJS.retireJS(path2)
+        endtime = (time.time() - start_time)
+        print(endtime)
         flash('File successfully uploaded')
         return redirect('/')
 
 if __name__ == "__main__":
-    app.run(host='127.0.0.1',port=5000,debug=True,threaded=True)
+    app.run(host='127.0.0.1',port=5000,debug=True,threaded=True)    

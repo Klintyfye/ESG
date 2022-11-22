@@ -11,7 +11,7 @@ body {
     font-size: 32px;
     text-align: center
   }
-  h1{
+h1{
     text-align: center;
   }
 
@@ -55,32 +55,28 @@ input[type="text"] {
 
 .api_results{
 width: 450px;
+/* padding: 0px 32px; */
 /* border: 15px solid; */
-padding: 10px;
 color: #000;
-
 }
-.results{
-    width: 450px;
-    
 
-}
 img {
     border: 1px solid;
     border-radius: 4px;
     padding: 2px;
-    width: 100px;
-   
+    width: 90px ;
+    height: 60px;
+    float: left;
   } 
 
   
 h2{
-    /* flex-basis: 20%; */
     flex-basis: 100%;
     float: right;
-    font-size: 14px;
+    font-size: 13px;
     border: 1px solid;
-    width: 340px; 
+    width: 442px; 
+    margin: 5px;
    
 }   
 
