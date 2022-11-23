@@ -40,60 +40,59 @@ def get_item(alist):
         if listlen >= 4:
             for i in range(4):
                 blist.append([])
-                blist[i].append(alist[1][1][i][37]) 
-                blist[i].append(alist[1][1][i][1]) 
+                blist[i].append(alist[1][1][i][37])
+                blist[i].append(alist[1][1][i][1])
                 blist[i].append(alist[1][1][i][4])
-                blist[i].append(alist[1][1][i][6]) 
-                blist[i].append(alist[1][1][i][22]) 
+                blist[i].append(alist[1][1][i][6])
+                blist[i].append(alist[1][1][i][22])
                 blist[i].append(alist[1][1][i][12])
             # print(blist)
         elif listlen == 3:
             for i in range(3):
                 blist.append([])
                 # print('\n''####################################################')
-                blist[i].append(alist[1][1][i][37]) 
-                blist[i].append(alist[1][1][i][1]) 
+                blist[i].append(alist[1][1][i][37])
+                blist[i].append(alist[1][1][i][1])
                 blist[i].append(alist[1][1][i][4])
-                blist[i].append(alist[1][1][i][6]) 
-                blist[i].append(alist[1][1][i][22]) 
+                blist[i].append(alist[1][1][i][6])
+                blist[i].append(alist[1][1][i][22])
                 blist[i].append(alist[1][1][i][12])
             # print(blist)
         elif listlen == 2:
             for i in range(2):
                 blist.append([])
                 # print('\n''####################################################')
-                blist[i].append(alist[1][1][i][37]) 
-                blist[i].append(alist[1][1][i][1]) 
+                blist[i].append(alist[1][1][i][37])
+                blist[i].append(alist[1][1][i][1])
                 blist[i].append(alist[1][1][i][4])
-                blist[i].append(alist[1][1][i][6]) 
-                blist[i].append(alist[1][1][i][22]) 
+                blist[i].append(alist[1][1][i][6])
+                blist[i].append(alist[1][1][i][22])
                 blist[i].append(alist[1][1][i][12])
             # print(blist)
         elif listlen == 1:
             for i in range(1):
                 blist.append([])
                 # print('\n''####################################################')
-                blist[i].append(alist[1][1][i][37]) 
-                blist[i].append(alist[1][1][i][1]) 
+                blist[i].append(alist[1][1][i][37])
+                blist[i].append(alist[1][1][i][1])
                 blist[i].append(alist[1][1][i][4])
-                blist[i].append(alist[1][1][i][6]) 
-                blist[i].append(alist[1][1][i][22]) 
+                blist[i].append(alist[1][1][i][6])
+                blist[i].append(alist[1][1][i][22])
                 blist[i].append(alist[1][1][i][12])
             # print(blist)
-        return blist
-    return blist
+    print(blist)
             # print('\n''####################################################')
 
-    
+
 
 
 # # For testing
-# test_value = 'adblock'
+test_value = 'adblock'
 
 
 # autocomplete(test_value)
 
-# get_item(test_value)
+get_item(test_value)
 
 # ['adblock plus', 'adblock for youtube']
 

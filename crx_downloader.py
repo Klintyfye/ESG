@@ -121,6 +121,7 @@ class ChromeExtensionDownloader():
 		if from_user_agent:
 			return ".".join(from_user_agent[0])
 		elif re.match(r"\d+\.\d+\.\d+", chrome_version):
+			print(chrome_version)
 			return chrome_version
 
 
@@ -135,4 +136,4 @@ def download_crx(url):
 	# Logging
 	# print(downloader)
 
-# download_crx('https://chrome.google.com/webstore/detail/adblock-%E2%80%94-best-ad-blocker/gighmmpiobklfepjocnamgkkbiglidom')
+download_crx('https://chrome.google.com/webstore/detail/adblock-%E2%80%94-best-ad-blocker/gighmmpiobklfepjocnamgkkbiglidom')
