@@ -3,13 +3,13 @@ from flask import Flask, flash, request, redirect, render_template, url_for
 from werkzeug.utils import secure_filename
 from fileinput import filename
 from zipfile import ZipFile
-import retireJS 
-import virustotal 
-import api 
+import retireJS
+import virustotal
+import api
 import crx_downloader
 import time
 
-app=Flask(__name__)
+app=Flask(__name__, template_folder='Templates/')
 app.secret_key = "juvsnpqb##?+`okojpj##¤¤%&#pakia" # for encrypting the sessions
 #It will allow below 250MB contents only, you can change it
 app.config['MAX_CONTENT_LENGTH'] = 250 * 1024 * 1024
@@ -29,7 +29,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 ALLOWED_EXTENSIONS = set(['crx'])
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-    
+
 
 
 @app.route('/')
@@ -52,7 +52,7 @@ def upload_file():
             file.save(os.path.join(app.config['UPLOAD_CRX_FOLDER'], filename))
             path = os.path.join(app.config['UPLOAD_CRX_FOLDER'], filename)
             with ZipFile(path) as crx_unzip:
-            # Extracting all the members of the zip 
+            # Extracting all the members of the zip
             # into a specific location.
                 crx_unzip.extractall(
                     path = os.path.join(app.config['UPLOAD_FOLDER'], filename))
@@ -92,7 +92,7 @@ def analyze():
             crx_downloader.download_crx(extension_name)
             path = os.path.join(app.config['UPLOAD_CRX_FOLDER'], name+'.crx')
             with ZipFile(path) as crx_unzip:
-            # Extracting all the members of the zip 
+            # Extracting all the members of the zip
             # into a specific location.
                 crx_unzip.extractall(
                     path = os.path.join(app.config['UPLOAD_FOLDER'], name+'.crx'))
@@ -110,4 +110,4 @@ def analyze():
         return redirect('/')
 
 if __name__ == "__main__":
-    app.run(host='127.0.0.1',port=5000,debug=True,threaded=True)    
+    app.run(host='127.0.0.1',port=5000,debug=True,threaded=True)
