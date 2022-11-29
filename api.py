@@ -87,12 +87,12 @@ def get_item(alist):
 
 
 # # For testing
-test_value = 'adblock'
+# test_value = 'adblock'
 
 
 # autocomplete(test_value)
 
-get_item(test_value)
+# get_item(test_value)
 
 # ['adblock plus', 'adblock for youtube']
 

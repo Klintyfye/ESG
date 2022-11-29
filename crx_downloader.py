@@ -136,4 +136,4 @@ def download_crx(url):
 	# Logging
 	# print(downloader)
 
-download_crx('https://chrome.google.com/webstore/detail/adblock-%E2%80%94-best-ad-blocker/gighmmpiobklfepjocnamgkkbiglidom')
+# download_crx('https://chrome.google.com/webstore/detail/adblock-%E2%80%94-best-ad-blocker/gighmmpiobklfepjocnamgkkbiglidom')

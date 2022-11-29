@@ -1,31 +1,48 @@
 import json
-import hashlib
+from datetime import datetime
 
-def compileResult(crxDir, jsDir, vtDir):
-    #Load the temp json as a dict
+def compileResult(jsDir: str, vtDir: str, cwsId: str) -> dict:
+    """Uses results from retireJs and virus total along with the cwsId to compile important information.
+
+    Args:
+        jsDir (str): directory to result file from retireJS
+        vtDir (str): directory to result file from virusTotal
+        cwsId (str): id of the extension on the chrome web store
+
+    Returns:
+        dict: dict of combined results of 
+    """
+
+    result = {}
+
+    #read RetireJS data
     with open(jsDir, "r") as f:
-        data = json.load(f)
+        file = json.load(f)
 
+    file = file["data"]
+    
+    #add RetireJS data to dict              #apparently we wanted to keep everything but the "detection" value. Not much cleaning going on here
+    for object in file:
+        for temp in object["results"]:
+            temp.pop("detection", None)
 
-    #Get hash of crx
-    with open(crxDir ,"rb") as f:
-        bytes = f.read()
-        hash = hashlib.sha256(bytes).hexdigest()
+    result["retireJs"] = file
 
-    #Add virus total data
-        ###
-        ###
-        ###
+    #read Virus Total data
+    with open(vtDir, "r") as f:
+        file = json.load(f)
+
+    #add Virus Total data to dict
+    sum = 0
+    for num in file["data"]["attributes"]["stats"]:
+        sum += file["data"]["attributes"]["stats"][num]
+    result["virusTotal"] = file["data"]["attributes"]["stats"]
+    result["virusTotalSum"] = sum
+
 
     #Add the hash to the dict of the json so we can use it as an identifier
-    data["hash"] = hash
+    result["cwsId"] = cwsId
+    result["date"] = str(datetime.now())
+    result["hash"] = file["meta"]["file_info"]["sha256"]
 
-    return data
-
-
-jsDir = "tempJS.json"
-vtDir = "tempVT.json"
-crxDir = "adblock.crx"
-
-result = compileResult(crxDir, jsDir, vtDir)
-print(result)
+    return result

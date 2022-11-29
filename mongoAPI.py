@@ -1,13 +1,31 @@
+import constants
 import requests
 import json
+from typing import Literal
+
+APIKEY = constants.APIKEY
 
 #Insert json
-def insertOne(object):
+def insertOne(object: dict) -> Literal[-1,1]:
+    """Insert json into database.
+
+    Args:
+        object (dict): json to be inserted loaded as a dict.
+
+    Returns:
+        Literal[0,1]: returns 1 on success, -1 on failure.
+    """
+
+    #Check if document with identical hash exists in db
+    if(getByHash(object["hash"]) != {'document': None}):
+        return -1
+    
+
     url = "https://data.mongodb-api.com/app/data-jkbjv/endpoint/data/v1/action/insertOne"
     headers = {
     'Content-Type': 'application/json',
     'Access-Control-Request-Headers': '*',
-    'api-key': "srBukkVkfUToW1UYxdU4XCBq92vK5Su9IRzsf1spNX4i4IX5j3Cw5BNbIysuavqL", 
+    'api-key': APIKEY, 
     }
     
     payload = json.dumps({
@@ -19,15 +37,91 @@ def insertOne(object):
         "document": object
     })
     
-    requests.request("POST", url, headers=headers, data=payload)
+    response = requests.request("POST", url, headers=headers, data=payload)
+    return 1
 
-#Find json by filter
-def findOne(object):
+
+def getByHash(hash: str) -> dict:
+    """Fetches single (first) json with matching hash value.
+    
+    (should only ever be one not accounting for errors.)
+
+
+    Args:
+        hash (str): hash of crx.
+
+    Returns:
+        dict: Returns dict of item on success. 
+
+        dict: returns {"document:None} if no matches found.
+    """
+
+
+
     url = "https://data.mongodb-api.com/app/data-jkbjv/endpoint/data/v1/action/findOne"
     headers = {
     'Content-Type': 'application/json',
     'Access-Control-Request-Headers': '*',
-    'api-key': "srBukkVkfUToW1UYxdU4XCBq92vK5Su9IRzsf1spNX4i4IX5j3Cw5BNbIysuavqL", 
+    'api-key': APIKEY, 
+    }
+
+    payload = json.dumps({
+        "collection": "Results",
+        "database": "ESG",
+        "dataSource": "ESG-DB",
+        "filter": {
+            "hash":hash
+        }
+    })
+    response = requests.request("POST", url, headers=headers, data=payload)
+    return json.loads(response.text)
+
+def getById(cwsId: str) -> dict:
+    """Fetches a dictionary with a list of json with matching cwsId.
+
+    Args:
+        cwsId (str): Chrome Web Store Id.
+
+    Returns:
+        dict: Returns dict of items with matching [cwsId]. 
+
+        dict: returns {'documents': []} if no matches found.
+    """
+    
+    url = "https://data.mongodb-api.com/app/data-jkbjv/endpoint/data/v1/action/find"
+    headers = {
+    'Content-Type': 'application/json',
+    'Access-Control-Request-Headers': '*',
+    'api-key': APIKEY, 
+    }
+
+    payload = json.dumps({
+        "collection": "Results",
+        "database": "ESG",
+        "dataSource": "ESG-DB",
+        "filter": {
+            "cwsId": cwsId
+        }
+    })
+    response = requests.request("POST", url, headers=headers, data=payload)
+    return json.loads(response.text)
+
+#Drop json by filter
+def deleteOne(hash: str) -> Literal[0,1]:
+    """Drops json with hash value matching hash.
+
+    Args:
+        hash (str): hash value of crx.
+
+    Returns:
+        Literal[0,1]: returns 1 on success, 0 on failure
+    """
+
+    url = "https://data.mongodb-api.com/app/data-jkbjv/endpoint/data/v1/action/deleteOne"
+    headers = {
+    'Content-Type': 'application/json',
+    'Access-Control-Request-Headers': '*',
+    'api-key': APIKEY, 
     }
 
     payload = json.dumps({
@@ -36,29 +130,36 @@ def findOne(object):
         "dataSource": "ESG-DB",
         "filter": {
             #Filter of what to find (out of order)
-            object[0]:object[1]
+            "hash":hash
         }
     })
     response = requests.request("POST", url, headers=headers, data=payload)
-    return response.text
+    return json.loads(response.text)["deletedCount"]
 
-print("Start")
-
-object = {"x":"2"}
-
-key = "x"
-value = "2"
-
-
-with open('json.json', 'r') as f:
-  data = json.load(f)
-
-#print(data)
-insertOne(data)
-
-
-print(object)
-
-#print(findOne(object))
-
-print("Finish")
+if __name__ == '__main__':
+    print("Start demo:\n")
+    while 1:
+        usrInput = input("1:insert\n2:find\n3:find multiple\n4:delete\nq:quit\n")
+        match usrInput:
+            case "1":
+                cwsId = input("Insert cwsId: ")
+                hash = input("Insert hash: ")
+                object = {"cwsId":cwsId, "hash": hash}
+                print("Result:")
+                print(insertOne(object))
+            case "2":
+                hash = input("Insert hash: ")
+                print("Result:")
+                print(getByHash(hash))
+            case "3":
+                cwsId = input("Insert cwsId: ")
+                print("Result:")
+                print(getById(cwsId))
+            case "4":
+                hash = input("Insert hash: ")
+                print("Result:")
+                print(deleteOne(hash))
+            case "q":
+                break
+            case _:
+                print("please choose 1,2,3, or 4")

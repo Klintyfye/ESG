@@ -34,14 +34,21 @@ def allowed_file(filename):
 
 @app.route('/')
 def upload_form():
+    """Rendering the upload.html file"""
     return render_template('upload.html')
 
+@app.route('/loading')
+def loading():
+    return render_template('loading.html')
 
-@app.route('/', methods=['POST', 'GET'])
+@app.route('/upload', methods=['POST', 'GET'])
 def upload_file():
-
+    """Takes in the uploaded file and save it under crxuploads folder 
+    anzips the file and save it under uploads folder 
+    scans the file and the unzipd folder in virustotal and retireJS
+    returen: INTE KLAR ÄN 
+    """
     if request.method == 'POST':
-
         file = request.files['crxfile']
         if not file:
             flash('No file uploaded!')
@@ -63,11 +70,13 @@ def upload_file():
             flash('Only crx files')
             return redirect('/')
         endtime = (time.time() - start_time)
-        print(endtime)
         flash('File successfully uploaded')
-        return redirect('/')
+        return redirect('/loading')
+
+
 @app.route('/search', methods=['POST', 'GET'])
 def search():
+    """ Takes a search term and returns a list of search results to the Web UI"""
     if request.method == 'POST':
         extension_name = request.form.get('search')
         if not extension_name:
@@ -81,10 +90,16 @@ def search():
             extension_ifo_list[i][5] = round(extension_ifo_list[i][5],1)
 
         return render_template('upload.html', content = extension_ifo_list )
+    
 
 @app.route('/analyze', methods=['POST', 'GET'])
 def analyze():
-     if request.method == 'POST':
+    """ Takes in the request Extension from the list that tha search() funktion returns and downloads it under crxuploads folder 
+    anzips the file and save it under uploads folder 
+    scans the file and the unzipd folder in virustotal and retireJS
+    returen: INTE KLAR ÄN 
+     """
+    if request.method == 'POST':
         start_time = time.time()
         extension_name = request.form.get('extension_name')
         name = extension_name.split('/')[-2]
@@ -107,7 +122,7 @@ def analyze():
         endtime = (time.time() - start_time)
         print(endtime)
         flash('File successfully uploaded')
-        return redirect('/')
+        return render_template('loading.html')
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1',port=5000,debug=True,threaded=True)    
