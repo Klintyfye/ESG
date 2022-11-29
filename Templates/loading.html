@@ -7,17 +7,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
-<body>
+<body onpageshow="myFunction()">
+<!-- <body> -->
     <div class="loader"></div>
     <br/> <br/>
     <div class="checkboxes">
-        <form method="post" action="/loading">
-            Scanning in virustotal<input type="checkbox" name="adjective" value="virustotal" id = "a">
-            <output name="x" for="a"></output>
+        <form id = 'form' method="post" action="/results">
+            Scanning in virustotal<input type="checkbox" name="adjective" value= true id = "a" >
             <br/> <br/>
-            Scanning in retireJS<input type="checkbox" name="adjective" value="retireJS">
+            Scanning in retireJS<input type="checkbox" name="adjective" value="retireJS" >
             
             <!-- Scann <input type="checkbox" name="adjective" value="exceptional"> -->
-        </form> 
+            
+
+            <script>
+            function myFunction(){
+                // const x = document.getElementById('form').value()
+                // x.submit()
+                document.getElementById('form').submit();
+            }
+            </script>
+    </form> 
     </div>
 </html>
