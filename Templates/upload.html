@@ -7,7 +7,7 @@
     <script src="./static/app.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ESG</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
 </head>
 <body>
     <nav id="nav1">
@@ -40,6 +40,7 @@
                 <i class="fa fa-search"></i>
                 <input type="text" placeholder="Search..." name="search">
                 <button type="submit">Search</button>
+            </div>
         </form>
                 <div class='api_results'>
                     {% if content %}
@@ -57,7 +58,6 @@
                     {% endfor %}
                     {% endif %}
                 </div>
-            </div>
     </div>
     <p>
         {% with messages = get_flashed_messages() %}
