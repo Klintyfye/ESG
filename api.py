@@ -34,6 +34,9 @@ def get_item(alist):
 
     string = data.decode("utf-8").replace(")]}'\n\n", "", 1)
     alist = json.loads(string)
+
+    print(alist)
+
     blist = []
     if alist[1][1]:
         listlen = len(alist[1][1])
@@ -79,8 +82,9 @@ def get_item(alist):
                 blist[i].append(alist[1][1][i][6])
                 blist[i].append(alist[1][1][i][22])
                 blist[i].append(alist[1][1][i][12])
-            # print(blist)
+    print('\n\n')
     print(blist)
+    return blist
             # print('\n''####################################################')
 
 
