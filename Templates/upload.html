@@ -24,40 +24,49 @@
                 <h1 id="logo"><a href="upload.html">ESG</a></h1>
             </div>
     </nav>
-    <h1 id="tagline">Search for or submit an extension file to scan</h1>
+    <div id="main_page">
+        <h1 id="tagline">Search for or submit an extension file to scan.</h1>
 
-    <div class="card">
+        <div class="card">
 
         <div class="fileupload">
             <b>Select a extension (crx) file</b>
-            <form method="post" action="/upload" enctype="multipart/form-data">
+            <form method="post" action="/" enctype="multipart/form-data">
                 <input type="file" name="crxfile" >
                 <input type="submit" value="Submit">
             </form>
         </div>
-        <form  action="/search" method="post">
-            <div class="search_bar_form">
-                <i class="fa fa-search"></i>
-                <input type="text" placeholder="Search..." name="search">
-                <button type="submit">Search</button>
-        </form>
-                <div class='api_results'>
-                    {% if content %}
-                    {% for i in content %}
-                        <form action="/analyze" method="post" id="analyze" class = "form">
-                            <h2>
-                                <image src={{ i[2] }}></image>
-                                {{ i[1] }}
-                                <br/>
-                                    <button id = 'extension_name' name='extension_name' value= {{ i[0] }} type="hidden" class="button2">select</button>
-                                <br/>
-                                {{ i[5] }}\5
-                            </h2>
-                        </form>
-                    {% endfor %}
-                    {% endif %}
-                </div>
+
+        <div class="search_bar_form">
+            <i class="fa fa-search"></i>
+            <input type="text" placeholder="Search...">
+            <button type="submit">Search</button>
+        </div>
+
+        <b>Search for extensions in the Chrome Web Store</b>
+        <div class="search">
+            <form  action="/search" method="post">
+                <input type="text" placeSubmitholder="Search.." name="search" >
+                <button type="submit" class="button1"> <i class="fa fa-search" aria-label="Search"  > </i> </button>
+            </form>
+            <div class='api_results'>
+                {% if content %}
+                {% for i in content %}
+                    <form action="/analyze" method="post" id="analyze" class = "form">
+                        <h2>
+                            <image src={{ i[2] }}></image>
+                            {{ i[1] }}
+                            <br/>
+                                <button id = 'extension_name' name='extension_name' value= {{ i[0] }} type="hidden" class="button2">select</button>
+                            <br/>
+                            {{ i[5] }}\5
+                        </h2>
+                    </form>
+                {% endfor %}
+                {% endif %}
             </div>
+        </div>
+
     </div>
     <p>
         {% with messages = get_flashed_messages() %}
