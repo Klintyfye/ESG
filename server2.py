@@ -3,16 +3,16 @@ from flask import Flask, flash, request, redirect, render_template, url_for
 from werkzeug.utils import secure_filename
 from fileinput import filename
 from zipfile import ZipFile
-<<<<<<< HEAD
+# <<<<<<< HEAD
 import retireJS 
 import virusTotal 
 import api 
-=======
+# =======
 import retireJS
-import virustotal
+import virusTotal
 import api
 import CWS_api
->>>>>>> cbcc4ee8b36e1e54d42017d9a1fc70f29ba66876
+# >>>>>>> cbcc4ee8b36e1e54d42017d9a1fc70f29ba66876
 import crx_downloader
 import time
 import glob
