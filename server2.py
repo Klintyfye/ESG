@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 from fileinput import filename
 from zipfile import ZipFile
 import retireJS 
-import virustotal 
+import virusTotal 
 import api 
 import crx_downloader
 import time
@@ -82,11 +82,11 @@ def results():
     extension_name= path.split('/')[-1]
     path2 = max(glob.iglob(app.config['UPLOAD_FOLDER'] + '/'+extension_name),key=os.path.getctime)
     print(path, '\n', path2, '\n', extension_name )
-    # virustotal.virustotal(path)
-    # retireJS.retireJS(path2)
-    print(extension_name.split('.')[0])
-    extension_info = api.get_item(extension_name.split('.')[0])
-    print(extension_info)
+    virusTotal.virustotal(path)
+    retireJS.retireJS(path2)
+    # print(extension_name.split('.')[0])
+    # extension_info = api.get_item(extension_name.split('.')[0])
+    # print(extension_info)
     return render_template("results.html")
 
 @app.route('/search', methods=['POST', 'GET'])

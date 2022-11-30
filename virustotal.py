@@ -97,7 +97,7 @@ def url_for_analysis_report_from_hash(path):
     fourth_response= requests.get(url_for_analysis_hash, headers=fourth_header)
     json_data1 = json.loads(fourth_response.text)
     #print(json_data1)
-    filename = "virustotal_output.json"
+    filename = "vtResult.json"
     with open(filename, "w") as file_object:
        json.dump(json_data1, file_object)
 
