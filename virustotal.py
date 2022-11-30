@@ -76,7 +76,7 @@ def if_file_queued(path):
             break
         print("Process is in queue, please wait...")
         time.sleep(5) 
-    filename = "virustotal_output.json"
+    filename = "vtResult.json"
     sha256_value = info["meta"]["file_info"]["sha256"]
     #print(sha256_value)
     with open(filename, "w") as file_object:
@@ -97,7 +97,7 @@ def url_for_analysis_report_from_hash(path):
     fourth_response= requests.get(url_for_analysis_hash, headers=fourth_header)
     json_data1 = json.loads(fourth_response.text)
     #print(json_data1)
-    filename = "virustotal_output.json"
+    filename = "vtResult.json"
     with open(filename, "w") as file_object:
        json.dump(json_data1, file_object)
 
