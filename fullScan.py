@@ -5,12 +5,12 @@ import resultCompile
 import runRetire
 import virusTotal
 
-def scan(crxDir: str, cwsId: str) -> Literal[-1,1]:
+def scan(crxDir: str, meta: dict) -> Literal[-1,1]:
     """Takes path of crx and its cwsId and scans, compiles results, and uploads to database
 
     Args:
         crxDir (str): Relative or absolute path of crx to scan.
-        cwsId (str): Chrome Web Store id of extension
+        meta (dict): dictionary of meta data including: cwsId (chrome web store id), extension name etc...
 
     Returns:
         Literal[0,1]: returns 1 on databse upload success or -1 on databse upload failure.
@@ -35,10 +35,10 @@ def scan(crxDir: str, cwsId: str) -> Literal[-1,1]:
 
     print("Börja compile")
     #Compiles results from retireJS and virusTotal
-    object = resultCompile.compileResult(jsDir, vtDir, cwsId)
+    object = resultCompile.compileResult(jsDir, vtDir, meta)
 
     #Inserts result json into db
-    #print(object)
+    print(object)
     return mongoAPI.insertOne(object)
 
 
@@ -47,5 +47,7 @@ if __name__ == '__main__':
     #cwsId = "123"
     crxDir = input("crxDir: ")
     cwsId = input("cwsId: ")
-    scan(crxDir, cwsId)
+    meta = {"cwsId":cwsId}
+
+    print(scan(crxDir, meta))
     print("Done")

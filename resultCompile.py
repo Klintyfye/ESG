@@ -1,13 +1,13 @@
 import json
 from datetime import datetime
 
-def compileResult(jsDir: str, vtDir: str, cwsId: str) -> dict:
+def compileResult(jsDir: str, vtDir: str, meta: dict) -> dict:
     """Uses results from retireJs and virus total along with the cwsId to compile important information.
 
     Args:
         jsDir (str): directory to result file from retireJS
         vtDir (str): directory to result file from virusTotal
-        cwsId (str): id of the extension on the chrome web store
+        meta (dict): dictionary of meta data including: cwsId (chrome web store id), extension name etc...
 
     Returns:
         dict: dict of combined results of 
@@ -21,7 +21,7 @@ def compileResult(jsDir: str, vtDir: str, cwsId: str) -> dict:
 
     file = file["data"]
     
-    #add RetireJS data to dict              #apparently we wanted to keep everything but the "detection" value. Not much cleaning going on here
+    #add RetireJS data to dict
     for object in file:
         for temp in object["results"]:
             temp.pop("detection", None)
@@ -40,9 +40,9 @@ def compileResult(jsDir: str, vtDir: str, cwsId: str) -> dict:
     result["virusTotalSum"] = sum
 
 
-    #Add the hash to the dict of the json so we can use it as an identifier
-    result["cwsId"] = cwsId
-    result["date"] = str(datetime.now())
+    #Add meta data to the dict of the json so we can use it as an identifier
+    meta["date"] = {str(datetime.now())}
+    result["meta"] = meta
     result["hash"] = file["meta"]["file_info"]["sha256"]
 
     return result
