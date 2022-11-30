@@ -1,3 +1,4 @@
+/* Main body Start */
 body {
 	 background-repeat: no-repeat;
 	 background-size: cover;
@@ -22,41 +23,72 @@ body.dark {
 	background-color: var(--primary-foreground-color);
 
 	/* Variables */
-	--primary-foreground-color: #f7f7f7;
+	--primary-foreground-color: #f2f2f2;
 }
 #main_page.dark {
 	--primary-foreground-color: #626775;
 }
 
-#tagline{
-	text-align: center;
-	font-family:verdana
-}
+/* Main body End */
 
 /* Search bar Start*/
-.search_bar_form {
+.search-wrapper {
+	background-color: #ffffff;
+	border-top-left-radius: 20px;
+	border-bottom-left-radius: 20px;
+	border-top-right-radius: 20px;
+	border-bottom-right-radius: 20px;
+}
+.autocom-box {
+	padding: 10px 8px;
+	overflow-y: auto;
+	max-height: 280px;
+}
+
+.autocom-box li {
+	list-style: none;
+	padding: 8px 12px;
+	width: 90%;
+	cursor: default;
+	border-radius: 8px;
+}
+
+.autocom-box li:hover {
+	background-color: #efefef;
+}
+
+.search-bar-form {
 	background: #ffffff;
 	width: 100%;
 	height: 55px;
 	display: flex;
+	border-top-left-radius: 20px;
+	border-bottom-left-radius: 20px;
+	border-top-right-radius: 20px;
+	border-bottom-right-radius: 20px;
+	box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.1);
 }
 
-.search_bar_form input {
+.search-bar-form input {
 	flex: 1;
 	border: none;
 	outline: none;
+	font-size: 18px;
 }
 
-.search_bar_form button {
+.search-bar-form button {
 	background: tomato;
 	padding: 10px 40px;
+	font-size: 18px;
 	border: none;
 	outline: none;
 	color: #ffffff;
 	cursor: pointer;
+	border-top-right-radius: 20px;
+	border-bottom-right-radius: 20px;
 }
 
-.search_bar_form .fa-search {
+.search-bar-form .fa-search {
 	align-self: center;
 	padding: 10px 20px;
 	color: #777777;
@@ -92,12 +124,18 @@ body.dark {
 
 
 .api_results{
-	 font-family:Arial, Helvetica, sans-serif;
+	font-family:Arial, Helvetica, sans-serif;
+	top: 25em;
+	position: absolute;
+	width: 450px;
+	padding: 0px 32px;
+	border: 1px solid;
+	color: #000;
+}
 
-width: 450px;
-/* padding: 0px 32px; */
-/* border: 15px solid; */
-color: #000;
+#tagline{
+	text-align: center;
+	font-family:verdana
 }
 
 h2{
@@ -305,3 +343,4 @@ footer.dark {
 	--primary-footer-color: #64737e;
 	--primary-footer-box-color: #6e7f94;
 }
+/* FOOTER END */

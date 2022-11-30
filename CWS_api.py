@@ -37,6 +37,6 @@ def get_item(extension_name):
 
 
 # For testing
-test_value = 'adblock'
-# print(autocomplete(test_value))
-print(get_item(test_value))
+test_value = 'ad'
+print(autocomplete(test_value))
+# print(get_item(test_value))

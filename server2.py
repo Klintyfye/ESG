@@ -3,14 +3,15 @@ from flask import Flask, flash, request, redirect, render_template, url_for
 from werkzeug.utils import secure_filename
 from fileinput import filename
 from zipfile import ZipFile
-import retireJS 
-import virustotal 
-import api 
+import retireJS
+import virustotal
+import api
+import CWS_api
 import crx_downloader
 import time
-import glob 
+import glob
 
-app=Flask(__name__)
+app=Flask(__name__, template_folder='Templates/')
 app.secret_key = "juvsnpqb##?+`okojpj##¤¤%&#pakia" # for encrypting the sessions
 #It will allow below 250MB contents only, you can change it
 app.config['MAX_CONTENT_LENGTH'] = 250 * 1024 * 1024
@@ -30,7 +31,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 ALLOWED_EXTENSIONS = set(['crx'])
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-    
+
 
 
 @app.route('/')
@@ -44,10 +45,10 @@ def loading():
 
 @app.route('/upload', methods=['POST', 'GET'])
 def upload_file():
-    """Takes in the uploaded file and save it under crxuploads folder 
-    anzips the file and save it under uploads folder 
+    """Takes in the uploaded file and save it under crxuploads folder
+    anzips the file and save it under uploads folder
     scans the file and the unzipd folder in virustotal and retireJS
-    returen: INTE KLAR ÄN 
+    returen: INTE KLAR ÄN
     """
     if request.method == 'POST':
         file = request.files['crxfile']
@@ -60,7 +61,7 @@ def upload_file():
             file.save(os.path.join(app.config['UPLOAD_CRX_FOLDER'], filename))
             path = os.path.join(app.config['UPLOAD_CRX_FOLDER'], filename)
             with ZipFile(path) as crx_unzip:
-            # Extracting all the members of the zip 
+            # Extracting all the members of the zip
             # into a specific location.
                 crx_unzip.extractall(
                     path = os.path.join(app.config['UPLOAD_FOLDER'], filename))
@@ -72,7 +73,7 @@ def upload_file():
             return redirect('/')
         endtime = (time.time() - start_time)
         flash('File successfully uploaded')
-        return render_template('loading.html') 
+        return render_template('loading.html')
 
 
 
@@ -105,14 +106,21 @@ def search():
             extension_ifo_list[i][5] = round(extension_ifo_list[i][5],1)
 
         return render_template('upload.html', content = extension_ifo_list )
-    
+
+@app.route("/auto_complete", methods=["POST"])
+def auto_complete():
+    output = request.get_json()
+    print(output)
+    print(CWS_api.autocomplete(output))
+    suggest_list = CWS_api.autocomplete(output);
+    return suggest_list
 
 @app.route('/analyze', methods=['POST', 'GET'])
 def analyze():
-    """ Takes in the request Extension from the list that tha search() funktion returns and downloads it under crxuploads folder 
-    anzips the file and save it under uploads folder 
+    """ Takes in the request Extension from the list that tha search() funktion returns and downloads it under crxuploads folder
+    anzips the file and save it under uploads folder
     scans the file and the unzipd folder in virustotal and retireJS
-    returen: INTE KLAR ÄN 
+    returen: INTE KLAR ÄN
      """
     if request.method == 'POST':
         # start_time = time.time()
@@ -122,12 +130,12 @@ def analyze():
         crx_downloader.download_crx(extension_name)
         path = os.path.join(app.config['UPLOAD_CRX_FOLDER'], name+'.crx')
         with ZipFile(path) as crx_unzip:
-        # Extracting all the members of the zip 
+        # Extracting all the members of the zip
         # into a specific location.
             crx_unzip.extractall(
                 path = os.path.join(app.config['UPLOAD_FOLDER'], name+'.crx'))
             # path2 = os.path.join(app.config['UPLOAD_FOLDER'], name+'.crx')
-            
+
             # virustotal.virustotal(path)
             # retireJS.retireJS(path2)
         # else:
@@ -141,4 +149,4 @@ def analyze():
         return render_template('loading.html')
 
 if __name__ == "__main__":
-    app.run(host='127.0.0.1',port=5000,debug=True,threaded=True)    
+    app.run(host='127.0.0.1',port=5000,debug=True,threaded=True)
