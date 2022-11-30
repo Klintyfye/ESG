@@ -37,6 +37,15 @@ def get_item(extension_name):
 
 
 # For testing
-test_value = 'adblock'
-# print(autocomplete(test_value))
-print(get_item(test_value))
+test_value = 'ad'
+print(autocomplete(test_value))
+# print(get_item(test_value))
+
+# Add other get api for combining with the json to be stored in the database. must be a dictiorary so that we can mark what each field is.
+# VT interner error handling
+# fotter text
+# Rating with stars?
+# Dark Mode?
+# solve: app = flask(__name__)
+# crx download
+# Standardisera var_namn

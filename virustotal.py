@@ -76,7 +76,7 @@ def if_file_queued(path):
             break
         print("Process is in queue, please wait...")
         time.sleep(5) 
-    filename = "virustotal_output.json"
+    filename = "vtResult.json"
     sha256_value = info["meta"]["file_info"]["sha256"]
     #print(sha256_value)
     with open(filename, "w") as file_object:
