@@ -18,10 +18,6 @@ import time
 import glob
 
 
-
-
-
-
 import base64
 from io import BytesIO
 import matplotlib.pyplot as Figure
@@ -107,12 +103,15 @@ def results():
     extension_name= path.split('/')[-1]
     path2 = max(glob.iglob(app.config['UPLOAD_FOLDER'] + '/'+extension_name),key=os.path.getctime)
     print(path, '\n', path2, '\n', extension_name )
-    virustotal.virustotal(path)
-    retireJS.retireJS(path2)
+    # virustotal.virustotal(path)
+    # retireJS.retireJS(path2)
+    # test = pie()
+    # test = test[1:-2]
+    # print(test)
     # print(extension_name.split('.')[0])
     # extension_info = api.get_item(extension_name.split('.')[0])
     # print(extension_info)
-    return render_template("results.html")
+    return render_template("results.html", test = pie(), test2 =  history())
 
 @app.route('/search', methods=['POST', 'GET'])
 def search():
@@ -173,7 +172,7 @@ def analyze():
         return render_template('loading.html')
 
 
-@app.route("/pie")
+
 def pie():
 
     result = mongoAPI.getByHash("0d1018ff158a9ac8e6654e4325edf5bc165a095cf2381d87ba018814ec618d13")
@@ -211,10 +210,11 @@ def pie():
 
     # Embed the result in the html output.
     data = base64.b64encode(buf.getbuffer()).decode("ascii")
+    # print(data)
+    # test = 'data:image/png;base64,'+data+"'"
+    # return test 
+    return f"data:image/png;base64,{data}"
 
-    return f"<img src='data:image/png;base64,{data}'/>"
-
-@app.route("/history")
 def history():
     
     result = list(mongoAPI.getById("123")["documents"])
@@ -255,7 +255,7 @@ def history():
     # Embed the result in the html output.
     data = base64.b64encode(buf.getbuffer()).decode("ascii")
 
-    return f"<img src='data:image/png;base64,{data}'/>"
+    return f"data:image/png;base64,{data}"
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1',port=5000,debug=True,threaded=True)
