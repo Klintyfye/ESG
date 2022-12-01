@@ -5,17 +5,35 @@ from fileinput import filename
 from zipfile import ZipFile
 # <<<<<<< HEAD
 import retireJS 
-import virusTotal 
+import virustotal
 import api 
 # =======
 import retireJS
-import virusTotal
+import virustotal
 import api
 import CWS_api
 # >>>>>>> cbcc4ee8b36e1e54d42017d9a1fc70f29ba66876
 import crx_downloader
 import time
 import glob
+
+
+
+
+
+
+import base64
+from io import BytesIO
+import matplotlib.pyplot as Figure
+import mongoAPI
+from datetime import datetime
+
+
+
+
+
+
+
 
 app=Flask(__name__, template_folder='Templates/')
 app.secret_key = "juvsnpqb##?+`okojpj##¤¤%&#pakia" # for encrypting the sessions
@@ -89,7 +107,7 @@ def results():
     extension_name= path.split('/')[-1]
     path2 = max(glob.iglob(app.config['UPLOAD_FOLDER'] + '/'+extension_name),key=os.path.getctime)
     print(path, '\n', path2, '\n', extension_name )
-    virusTotal.virustotal(path)
+    virustotal.virustotal(path)
     retireJS.retireJS(path2)
     # print(extension_name.split('.')[0])
     # extension_info = api.get_item(extension_name.split('.')[0])
@@ -153,6 +171,91 @@ def analyze():
         # print(endtime)
         flash('File successfully uploaded')
         return render_template('loading.html')
+
+
+@app.route("/pie")
+def pie():
+
+    result = mongoAPI.getByHash("0d1018ff158a9ac8e6654e4325edf5bc165a095cf2381d87ba018814ec618d13")
+    
+    labels = []
+    sizes = []
+    explode = []
+    vtResult = dict(result["document"]["virusTotal"])
+    vtTotal = result["document"]["virusTotalSum"]
+
+    #Iterates through vt results and adds correct values labels, sizes, and explode
+    for key in vtResult:
+        #If no engines flagged don't include in pie chart
+        if vtResult[key] > 0:
+            val = vtResult[key]
+            #Sets useful label: type \n (percent, nr)
+            labels.append(f"{key}\n({round(val/vtTotal*100,1)}%, {val})")
+            sizes.append(vtResult[key])
+            #highlight slices if they are malicious or supicious
+            if key in ["malicious", "suspicious"]:
+                explode.append(0.1)
+            else:
+                explode.append(0)
+
+    fig, ax = Figure.subplots()
+    #define chart
+    ax.pie(sizes, labels = labels, explode = explode, startangle=45,
+    wedgeprops={'linewidth': 1.0, 'edgecolor': 'white'})
+
+
+    ax.axis('equal')
+    # Save it to a temporary buffer.
+    buf = BytesIO()
+    Figure.savefig(buf, format="png")
+
+    # Embed the result in the html output.
+    data = base64.b64encode(buf.getbuffer()).decode("ascii")
+
+    return f"<img src='data:image/png;base64,{data}'/>"
+
+@app.route("/history")
+def history():
+    
+    result = list(mongoAPI.getById("123")["documents"])
+    
+    dates = []
+    risks = []
+    for object in result:
+        #adds just the date as time isn't that important and cuts the first two numbers of the year
+        dates.append(str(object["date"]).split()[0][2:])
+        risks.append(int(object["risk"]))
+    
+    #Sorts risks dependant on the order of dates
+    #zip the lists to a touple list
+    ziped = zip(dates,risks)
+    #Sort 
+    sort = sorted(ziped)
+    temp = []
+    #add risks to empty list in order of after they've been sorted by dates
+    for i in sort:
+       temp.append(i[1]) 
+    #overwrite risks with sorted version
+    risks = temp
+
+    #
+    #sort dates
+    dates.sort()
+    
+    fig, ax = Figure.subplots()
+    #define chart
+
+    ax.plot(dates, risks)
+    ax.set_xlabel("Time")
+    ax.set_ylabel("Risk")
+    # Save it to a temporary buffer.
+    buf = BytesIO()
+    Figure.savefig(buf, format="png")
+
+    # Embed the result in the html output.
+    data = base64.b64encode(buf.getbuffer()).decode("ascii")
+
+    return f"<img src='data:image/png;base64,{data}'/>"
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1',port=5000,debug=True,threaded=True)
