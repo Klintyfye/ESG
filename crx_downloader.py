@@ -32,7 +32,7 @@ class ChromeExtensionDownloader():
 		chrome_version = self.get_chrome_version(user_agent_ver)
 
 		extension_url = self.ext_download_url.format(chrome_version=chrome_version, extension_id=extension_id, arch=arch)
-		return extension_url, self.download_file(extension_url, dest_dir, file_name)
+		return extension_url, self.download_file(extension_url, dest_dir, extension_id) # file_name istället för extension_id
 
 
 	def parse_extension_url(self, chrome_store_url):
@@ -75,7 +75,7 @@ class ChromeExtensionDownloader():
 		if not dest_dir:
 			dest_dir = dirname(__file__)
 
-		dest_file = join(dest_dir, file_name + ".crx")
+		dest_file = join(dest_dir, file_name ) #+ ".crx"
 
 		with open(dest_file, "wb") as binary_file:
 			print()

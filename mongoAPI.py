@@ -13,11 +13,11 @@ def insertOne(object: dict) -> Literal[-1,1]:
         object (dict): json to be inserted loaded as a dict.
 
     Returns:
-        Literal[0,1]: returns 1 on success, -1 on failure.
+        Literal[-1,1]: returns 1 on success, -1 if file with hash already exists.
     """
 
     #Check if document with identical hash exists in db
-    if(getByHash(object["hash"]) != {'document': None}):
+    if(getByHash(object["hash"]) != None):
         return -1
     
 
@@ -37,11 +37,11 @@ def insertOne(object: dict) -> Literal[-1,1]:
         "document": object
     })
     
-    response = requests.request("POST", url, headers=headers, data=payload)
+    requests.request("POST", url, headers=headers, data=payload)
     return 1
 
 
-def getByHash(hash: str) -> dict:
+def getByHash(hash: str) -> dict|None:
     """Fetches single (first) json with matching hash value.
     
     (should only ever be one not accounting for errors.)
@@ -53,7 +53,7 @@ def getByHash(hash: str) -> dict:
     Returns:
         dict: Returns dict of item on success. 
 
-        dict: returns {"document:None} if no matches found.
+        dict: returns None if no matches found.
     """
 
 
@@ -71,21 +71,24 @@ def getByHash(hash: str) -> dict:
         "dataSource": "ESG-DB",
         "filter": {
             "hash":hash
+        },
+        "projection": {
+            "_id":0
         }
     })
     response = requests.request("POST", url, headers=headers, data=payload)
-    return json.loads(response.text)
+    return json.loads(response.text)["document"]
 
-def getById(cwsId: str) -> dict:
+def getById(cwsId: str) -> list:
     """Fetches a dictionary with a list of json with matching cwsId.
 
     Args:
         cwsId (str): Chrome Web Store Id.
 
     Returns:
-        dict: Returns dict of items with matching [cwsId]. 
+        list: Returns list of items (dicts) with matching [cwsId]. 
 
-        dict: returns {'documents': []} if no matches found.
+        list: returns [] if no matches found.
     """
     
     url = "https://data.mongodb-api.com/app/data-jkbjv/endpoint/data/v1/action/find"
@@ -101,10 +104,13 @@ def getById(cwsId: str) -> dict:
         "dataSource": "ESG-DB",
         "filter": {
             "cwsId": cwsId
+        },
+        "projection": {
+            "_id":0
         }
     })
     response = requests.request("POST", url, headers=headers, data=payload)
-    return json.loads(response.text)
+    return json.loads(response.text)["documents"]
 
 #Drop json by filter
 def deleteOne(hash: str) -> Literal[0,1]:
