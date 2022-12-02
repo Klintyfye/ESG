@@ -1,7 +1,7 @@
 // Getting the required elements
 const searchWrapper = document.querySelector(".search-bar-form");
 const inputBox = searchWrapper.querySelector("input");
-const suggBox = searchWrapper.querySelector(".autocom-box");
+const suggBox = document.getElementById("list_box")
 
 // If the user presses any key
 inputBox.onkeyup = (e)=>{
@@ -13,13 +13,23 @@ inputBox.onkeyup = (e)=>{
 		data: JSON.stringify(s)
 	})
 	.then(function (response){
+		rm_auto_com();
 		if (response.length){ // To remove any empty responses
 			for (let i = 0; i < 4; i++){
-				document.getElementById("test").innerHTML += "<li>" + response[i] + "</li>";
-				console.log(response[i])
-	// https://www.youtube.com/watch?v=QxMBHi_ZiT8 Make the suggestions clickable.
-	// Remove the old suggestions
+				document.getElementById("list_box").innerHTML += "<li onclick='select(this)'>" + response[i] + "</li>";
 			}
 		}
 	})
+}
+
+function rm_auto_com(){
+	while (suggBox.lastElementChild) {
+		suggBox.removeChild(suggBox.lastElementChild);
+	}
+}
+
+function select(element){
+	let sel = element.textContent;
+	inputBox.value = sel;
+	rm_auto_com();
 }

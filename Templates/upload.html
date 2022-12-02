@@ -43,9 +43,7 @@
                         <button type="submit">Search</button>
                     </div>
                 </form>
-                <div class="autocom-box" id="test">
-
-                </div>
+                <div class="autocom-box" id="list_box"></div>
                 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
                 <script src="./static/auto_complete.js"></script>
             </div>
@@ -55,14 +53,12 @@
                 {% if content %}
                 {% for i in content %}
                     <form action="/analyze" method="post" id="analyze" class = "form">
-                        <h2>
-                            <image src={{ i[2] }}></image>
-                            {{ i[1] }}
-                            <br/>
-                                <button id = 'extension_name' name='extension_name' value= {{ i[0] }} type="hidden" class="button2">select</button>
-                            <br/>
-                            {{ i[5] }}\5
-                        </h2>
+                        <div id="result_tab">
+                            <image id="result_img" src={{ i[2] }}></image>
+                            <span id="result_text">{{ i[1] }}</span>
+                            <button id='result_but' name='extension_name' value= {{ i[0] }} type="hidden" class="button2">select</button>
+                            <div id="result_rating">{{ i[5] }}\5</div>
+                        </div>
                     </form>
                 {% endfor %}
                 {% endif %}

@@ -122,30 +122,59 @@ body.dark {
 	 /* margin: 60px auto; */
 }
 
-
+/* API RESULTS START */
 .api_results{
 	font-family:Arial, Helvetica, sans-serif;
-	top: 25em;
+	top: 24em;
 	position: absolute;
 	width: 450px;
 	padding: 0px 32px;
-	border: 1px solid;
-	color: #000;
+	background-color: #f2f2f2;
+	border-radius: 10px;
 }
+
+.api_results #result_tab{
+	flex-basis: 100%;
+	float: right;
+	font-size: 13px;
+	background-color: #ffffff;
+	border-radius: 8px;
+	width: 442px;
+	margin: 5px;
+}
+
+.api_results #result_img {
+	padding-left: 10px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	display: inline-block;
+}
+
+.api_results #result_text {
+	font-size: larger;
+	padding-left: 10px;
+	display: inline-block;
+}
+
+.api_results #result_rating {
+	padding-left: 40px;
+	display: inline-block;
+}
+
+.api_results #result_but {
+	padding-left: 10px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	display: inline-block;
+}
+
+/* API RESULTS END */
+
+/* MANUAL UPLOAD START */
 
 #tagline{
 	text-align: center;
 	font-family:verdana
-}
-
-h2{
-	 flex-basis: 100%;
-	 float: right;
-	 font-size: 13px;
-	 border: 1px solid;
-	 width: 442px;
-	 margin: 5px;
-
 }
 
 .button1 {
@@ -167,6 +196,7 @@ h2{
 
 /* Better buttons here: https://getcssscan.com/css-buttons-examples */
 
+/* MANUAL UPLOAD END */
 
 
 

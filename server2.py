@@ -5,7 +5,6 @@ from fileinput import filename
 from zipfile import ZipFile
 import retireJS
 import virustotal
-import api
 import CWS_api
 import crx_downloader
 import time
@@ -96,9 +95,8 @@ def search():
     if request.method == 'POST':
         extension_name = request.form.get('search')
         if not extension_name:
-            flash('No input')
             return redirect('/')
-        extension_ifo_list = api.get_item(extension_name)
+        extension_ifo_list = CWS_api.get_item(extension_name)
         if extension_ifo_list == []:
             flash('No extensions found')
             return redirect('/')
@@ -110,8 +108,6 @@ def search():
 @app.route("/auto_complete", methods=["POST"])
 def auto_complete():
     output = request.get_json()
-    print(output)
-    print(CWS_api.autocomplete(output))
     suggest_list = CWS_api.autocomplete(output);
     return suggest_list
 
@@ -145,7 +141,6 @@ def analyze():
             # retireJS.retireJS(path2)
         # endtime = (time.time() - start_time)
         # print(endtime)
-        flash('File successfully uploaded')
         return render_template('loading.html')
 
 if __name__ == "__main__":
