@@ -25,10 +25,13 @@
             </div>
     </nav>
     <nav style="background-color: red; height: 700px; width: 50%;float: left;"> 
-        <div id = "extension_info" class="extension_info" style="background-color: navy; height: 120px; width: 100%;">
-            <a ><img id="extensionimg" src=".\static\logo.png" style="height: 100px; width: 100px;"></a>
-            <a style="float: right;"><h2>name of the extension</h2></a>
-
+        <div id = "extension_info" class="extension_info" style="background-color: rgb(218, 218, 226); height: 120px; width: 100%;">
+            {% if extension_info %}
+            {% for i in extension_info %}
+            <a ><img id="extensionimg" src={{ i[2]  }} style="height: 100px; width: 100px;"></a>
+            <a style="float: right;"><h2>{{ i[1]}}</h2></a>
+            {% endfor %}
+            {% endif %}
         </div>
         <div id = "pie" style="height: 250px; width: 100%; background-color: rgb(126, 94, 56);">
             <img src = {{ test }} style="height: 180px; width: 200px;"> </img>

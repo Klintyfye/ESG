@@ -99,19 +99,26 @@ def upload_file():
 
 @app.route('/results', methods=['POST', 'GET'])
 def results():
-    path = max(glob.iglob(app.config['UPLOAD_CRX_FOLDER']+'/*.crx'),key=os.path.getctime)
+    path = max(glob.iglob(app.config['UPLOAD_CRX_FOLDER']+'/*'),key=os.path.getctime)
     extension_name= path.split('/')[-1]
     path2 = max(glob.iglob(app.config['UPLOAD_FOLDER'] + '/'+extension_name),key=os.path.getctime)
-    print(path, '\n', path2, '\n', extension_name )
-    # virustotal.virustotal(path)
-    # retireJS.retireJS(path2)
-    # test = pie()
-    # test = test[1:-2]
-    # print(test)
-    # print(extension_name.split('.')[0])
-    # extension_info = api.get_item(extension_name.split('.')[0])
-    # print(extension_info)
-    return render_template("results.html", test = pie(), test2 =  history())
+    if not extension_name.split('.')[-1] == 'crx':
+        # print(path, '\n', path2, '\n', extension_name )
+        # virustotal.virustotal(path)
+        # retireJS.retireJS(path2)
+        # test = pie()
+        # test = test[1:-2]
+        # print(test)
+        # print(extension_name.split('.')[0])
+        extension_info = api.get_item(extension_name)
+        for i in range(len(extension_info)):
+            if len(extension_info) > 1:
+                extension_info.pop()
+        print(extension_info)
+
+        return render_template("results.html", extension_info = extension_info ,test = pie(), test2 =  history() )
+    else:
+        return render_template("results.html")
 
 @app.route('/search', methods=['POST', 'GET'])
 def search():
