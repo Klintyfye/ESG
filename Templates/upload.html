@@ -4,25 +4,23 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link rel="stylesheet" href="{{url_for('static', filename='styles.css')}}"/>
-    <script src="./static/app.js"></script>
     <link rel="icon" href="static/logo.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ESG</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
+    <script src="./static/rating.js"></script>
 </head>
 <body>
     <nav id="nav1">
         <ul>
-            <li style=" float:right;">
-                <label class="switch">
-                    <input type="checkbox" id="toggle_theme_btn" onclick="toggle_theme()">
-                    <span class="slider round"></span>
-                </label>
+            <li style=" float:left;">
+                <span>home</span>
             </li>
         </ul>
             <div id="logga">
-                <a href="upload.html"><img id="logoimg" src=".\static\logo.png"></a>
-                <h1 id="logo"><a href="upload.html">ESG</a></h1>
+                <a href="/"><img id="logoimg" src=".\static\logo.png"></a>
+                <h1 id="logo"><a href="/">ESG</a></h1>
             </div>
     </nav>
     <div id="main_page">
@@ -31,8 +29,8 @@
             <div class="fileupload">
                 <b>Select a extension (crx) file</b>
                 <form method="post" action="/upload" enctype="multipart/form-data">
-                    <input type="file" name="crxfile" >
-                    <input type="submit" value="Submit">
+                    <input type="file" name="crxfile">
+                    <input id="submit_button" type="submit" value="Submit">
                 </form>
             </div>
             <div class="search-wrapper">
@@ -47,24 +45,8 @@
                 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
                 <script src="./static/auto_complete.js"></script>
             </div>
-
-
-            <div class='api_results'>
-                {% if content %}
-                {% for i in content %}
-                    <form action="/analyze" method="post" id="analyze" class = "form">
-                        <div id="result_tab">
-                            <image id="result_img" src={{ i[2] }}></image>
-                            <span id="result_text">{{ i[1] }}</span>
-                            <button id='result_but' name='extension_name' value= {{ i[0] }} type="hidden" class="button2">select</button>
-                            <div id="result_rating">{{ i[5] }}\5</div>
-                        </div>
-                    </form>
-                {% endfor %}
-                {% endif %}
-            </div>
         </div>
-        <p>
+        <div class="err_res">
             {% with messages = get_flashed_messages() %}
             {% if messages %}
             <ul class=flashes>
@@ -74,9 +56,51 @@
             </ul>
             {% endif %}
             {% endwith %}
-        </p>
+        </div>
     </div>
-    <footer id="footer1">
-        lorem ipsum
-    </footer>
+    {% if content %}
+        <div id="api_results">
+            {% for i in content %}
+                <form action="/analyze" method="post" id="analyze" class = "form">
+                    <div id="result_tab" class="{{ i[6] }}">
+                        <image id="result_img" src={{ i[2] }}></image>
+                        <span id="result_text">{{ i[1] }}</span>
+                        <button id='result_but' name='extension_name' value= {{ i[0] }} type="hidden" class="button2">Select</button>
+                        <div id="result_rating">
+                            <div class="stars-outer">
+                                <div class="stars-inner"></div>
+                            </div>
+                            <span class="number-rating"></span>
+                            <i>, {{ i[4] }} ratings</i>
+                        </div>
+                            <script>
+                                rating = {{ i[5] }};
+                                console.log(rating);
+
+                                // Get percentage
+                                starPercentage = (rating / 5) * 100;
+
+                                console.log(starPercentage);
+
+                                // Round to nearest 10
+                                starPercentageRounded = `${Math.round(starPercentage / 10) * 10}%`;
+
+                                console.log(starPercentageRounded);
+
+                                // Set width of stars-inner to percentage
+                                document.querySelector(`.{{ i[6] }} .stars-inner`).style.width = starPercentageRounded;
+
+                                // Add number rating
+                                document.querySelector(`.{{ i[6] }} .number-rating`).innerHTML = rating;
+
+                            </script>
+                    </div>
+                </form>
+            {% endfor %}
+        </div>
+    {% endif %}
+</body>
+<footer id="footer1">
+    Product made by ESG for ©SoftHouse
+</footer>
 </html>

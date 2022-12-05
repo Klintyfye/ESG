@@ -4,9 +4,8 @@ from werkzeug.utils import secure_filename
 from fileinput import filename
 from zipfile import ZipFile
 # <<<<<<< HEAD
-import retireJS 
+import retireJS
 import virustotal
-import api 
 # =======
 import retireJS
 import virustotal
@@ -178,7 +177,7 @@ def analyze():
 def pie():
 
     result = mongoAPI.getByHash("0d1018ff158a9ac8e6654e4325edf5bc165a095cf2381d87ba018814ec618d13")
-    
+
     labels = []
     sizes = []
     explode = []
@@ -214,36 +213,36 @@ def pie():
     data = base64.b64encode(buf.getbuffer()).decode("ascii")
     # print(data)
     # test = 'data:image/png;base64,'+data+"'"
-    # return test 
+    # return test
     return f"data:image/png;base64,{data}"
 
 def history():
-    
+
     result = list(mongoAPI.getById("123")["documents"])
-    
+
     dates = []
     risks = []
     for object in result:
         #adds just the date as time isn't that important and cuts the first two numbers of the year
         dates.append(str(object["date"]).split()[0][2:])
         risks.append(int(object["risk"]))
-    
+
     #Sorts risks dependant on the order of dates
     #zip the lists to a touple list
     ziped = zip(dates,risks)
-    #Sort 
+    #Sort
     sort = sorted(ziped)
     temp = []
     #add risks to empty list in order of after they've been sorted by dates
     for i in sort:
-       temp.append(i[1]) 
+       temp.append(i[1])
     #overwrite risks with sorted version
     risks = temp
 
     #
     #sort dates
     dates.sort()
-    
+
     fig, ax = Figure.subplots()
     #define chart
 

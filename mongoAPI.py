@@ -3,7 +3,9 @@ import requests
 import json
 from typing import Literal
 
-APIKEY = constants.APIKEY
+APIKEY="y4UK7S7A8KY6xKIhBlkx2DBqWO0H0OQNzkSB6JaSIh4BfaqKfjqWVbe3TkPmcBs6"
+
+# APIKEY = constants.APIKEY
 
 #Insert json
 def insertOne(object: dict) -> Literal[-1,1]:
@@ -19,15 +21,15 @@ def insertOne(object: dict) -> Literal[-1,1]:
     #Check if document with identical hash exists in db
     if(getByHash(object["hash"]) != None):
         return -1
-    
+
 
     url = "https://data.mongodb-api.com/app/data-jkbjv/endpoint/data/v1/action/insertOne"
     headers = {
     'Content-Type': 'application/json',
     'Access-Control-Request-Headers': '*',
-    'api-key': APIKEY, 
+    'api-key': APIKEY,
     }
-    
+
     payload = json.dumps({
         "collection": "Results",
         "database": "ESG",
@@ -36,14 +38,14 @@ def insertOne(object: dict) -> Literal[-1,1]:
         #json to be inserted
         "document": object
     })
-    
+
     requests.request("POST", url, headers=headers, data=payload)
     return 1
 
 
 def getByHash(hash: str) -> dict|None:
     """Fetches single (first) json with matching hash value.
-    
+
     (should only ever be one not accounting for errors.)
 
 
@@ -51,7 +53,7 @@ def getByHash(hash: str) -> dict|None:
         hash (str): hash of crx.
 
     Returns:
-        dict: Returns dict of item on success. 
+        dict: Returns dict of item on success.
 
         dict: returns None if no matches found.
     """
@@ -62,7 +64,7 @@ def getByHash(hash: str) -> dict|None:
     headers = {
     'Content-Type': 'application/json',
     'Access-Control-Request-Headers': '*',
-    'api-key': APIKEY, 
+    'api-key': APIKEY,
     }
 
     payload = json.dumps({
@@ -86,16 +88,16 @@ def getById(cwsId: str) -> list:
         cwsId (str): Chrome Web Store Id.
 
     Returns:
-        list: Returns list of items (dicts) with matching [cwsId]. 
+        list: Returns list of items (dicts) with matching [cwsId].
 
         list: returns [] if no matches found.
     """
-    
+
     url = "https://data.mongodb-api.com/app/data-jkbjv/endpoint/data/v1/action/find"
     headers = {
     'Content-Type': 'application/json',
     'Access-Control-Request-Headers': '*',
-    'api-key': APIKEY, 
+    'api-key': APIKEY,
     }
 
     payload = json.dumps({
@@ -127,7 +129,7 @@ def deleteOne(hash: str) -> Literal[0,1]:
     headers = {
     'Content-Type': 'application/json',
     'Access-Control-Request-Headers': '*',
-    'api-key': APIKEY, 
+    'api-key': APIKEY,
     }
 
     payload = json.dumps({
