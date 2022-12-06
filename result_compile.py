@@ -1,7 +1,8 @@
 import json
 from datetime import datetime
+import os
 
-def compileResult(jsDir: str, vtDir: str, meta: dict) -> dict:
+def compile_result(jsDir: str, vtDir: str, meta: dict) -> dict:
     """Uses results from retireJs and virus total along with the cwsId to compile important information.
 
     Args:
@@ -25,8 +26,25 @@ def compileResult(jsDir: str, vtDir: str, meta: dict) -> dict:
     for object in file:
         for temp in object["results"]:
             temp.pop("detection", None)
+    
+    #Keeps only relative path
+    cwd = os.getcwd()
+    for object in file:
+        object["file"] = os.path.relpath(object["file"], cwd+"/temp")
 
+    #Summarises retireJS vulnerabilities
+    severities = {"none":0,"low":0,"medium":0,"high":0,"critical":0}
     result["retireJs"] = file
+    print(file[0]["results"])
+    for temp in file:
+        for object in temp["results"][0]["vulnerabilities"]:
+            for severity in severities:
+                if object["severity"] == severity:
+                    severities[severity] += 1
+                    break
+    
+    
+    result["retireSeverity"] = severities
 
     #read Virus Total data
     with open(vtDir, "r") as f:
@@ -41,7 +59,7 @@ def compileResult(jsDir: str, vtDir: str, meta: dict) -> dict:
 
 
     #Add meta data to the dict of the json so we can use it as an identifier
-    meta["date"] = {str(datetime.now())}
+    meta["date"] = str(datetime.now())
     result["meta"] = meta
     result["hash"] = file["meta"]["file_info"]["sha256"]
 

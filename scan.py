@@ -35,7 +35,7 @@ def scan(crxDir: str, meta: dict) -> Literal[-1,1]:
 
     print("Börja compile")
     #Compiles results from retireJS and virusTotal
-    object = result_compile.compileResult(jsDir, vtDir, meta)
+    object = result_compile.compile_result(jsDir, vtDir, meta)
 
     #Inserts result json into db
     print(object)
@@ -47,8 +47,6 @@ def scan(crxDir: str, meta: dict) -> Literal[-1,1]:
 
 
 if __name__ == '__main__':
-    #crxDir = "crx.crx"
-    #cwsId = "123"
     crxDir = input("crxDir: ")
     cwsId = input("cwsId: ")
     meta = {"cwsId":cwsId}

@@ -3,20 +3,16 @@ from flask import Flask, flash, request, redirect, render_template, url_for
 from werkzeug.utils import secure_filename
 from fileinput import filename
 # <<<<<<< HEAD
-
-# =======
 import CWS_API
 import scan
 # >>>>>>> cbcc4ee8b36e1e54d42017d9a1fc70f29ba66876
 import crx_downloader
 import glob
-
 import base64
 from io import BytesIO
 import matplotlib.pyplot as Figure
 import mongo_API
 import hashlib
-
 
 #????????????????????????
 app=Flask(__name__, template_folder='Templates/')
@@ -52,7 +48,6 @@ ALLOWED_EXTENSIONS = set(['crx'])
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-
 #Renders upload html as root page
 @app.route('/')
 def upload_form():
@@ -69,13 +64,13 @@ def upload_file():
 
     #Checks request method. If not post, don't do anything
     if request.method == 'POST':
-
         #Read file by filename from html
         file = request.files['crxfile']
         #Cancel if no file was uploaded
         if not file:
             flash('No file uploaded!')
             return redirect('/')
+
         #If allowed file was upploaded get the name and save the file.
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
@@ -103,55 +98,84 @@ def results():
     #Check if extension already exists in database
     exist = mongo_API.getByHash(readable_hash)
 
-    #if extension is in database
+    #if extension is NOT in database
     if exist == None:
         #Get extension id
-        extension_id = path.split('/')[-1]
+        extension_id= path.split('/')[-1]
 
-        #Extension id ending in crx signifies local upload
-        if not extension_id.split('.')[-1] == 'crx':
+        #Extension id NOT ending in "crx" signifies CWS
+        if extension_id.split('.')[-1] != 'crx':
             extension_info = CWS_API.get_item(extension_id)
-            for i in range(len(extension_info)):
-                if len(extension_info) > 1:
-                    extension_info.pop()
-            print(extension_info)
+
+            #Gathers metadata of extension
             meta = {"cwsId":extension_id, "name": extension_info[0][1]}
+
+            #Scans crx
             scan.scan(path, meta)
+
+            #Creates charts of file and history
             result, test = pie(path)
             history_img = history(extension_id)
-            return render_template("results.html", extension_info = extension_info ,result = result,test = test, test2 = history_img )
-        #Extension id NOT ending in crx signifies CWS upload
+
+            #Renders result
+            return render_template("results.html", extension_info = extension_info[0] ,result = result,test = test, test2 = history_img )
+
+        #Extension id ending in "crx" signifies local upload
         else:
-            meta = {"cwsId":None, "name": extension_id}
+            #Gathers metadata of extension
+            meta = {"cwsId":"None", "name": extension_id}
+
+            #Scans crx
             result = scan.scan(path, meta)
-            return render_template("results.html", result=result)
-    #if database is not in database already
+
+            #Creates pie chart
+            result, test = pie(path)
+
+            #Renders result
+            return render_template("results.html", result = result)
+
+    #if extension is already in database
     else:
+
+        #Get extension id
         extension_id= path.split('/')[-1]
         extension_info = CWS_API.get_item(extension_id)
-        history_img = history(extension_id)
+
+        #Creates charts of file and history
         result, test = pie(path)
+        history_img = history(extension_id)
+
         print('########################')
-        return render_template("results.html", result = exist, extension_info = extension_info, test = test, test2 = history_img)
+
+        return render_template("results.html", result = exist, extension_info = extension_info,test = test, test2 = history_img)
 
 @app.route('/search', methods=['POST', 'GET'])
 def search():
     """ Takes a search term and returns a list of search results to the Web UI"""
+
+    #Checks request method. If not post, don't do anything
     if request.method == 'POST':
         extension_name = request.form.get('search')
+
+        #Cancel if no extension name
         if not extension_name:
             flash('No input')
             return redirect('/')
-        extension_ifo_list = CWS_API.get_item(extension_name)
-        if extension_ifo_list == []:
+
+        extension_info_list = CWS_API.get_item(extension_name)
+
+        #If item extension does not exist cancel
+        if extension_info_list == []:
             flash('No extensions found')
             return redirect('/')
-        for i in range(len(extension_ifo_list)):
-            extension_ifo_list[i][5] = round(extension_ifo_list[i][5],1)
 
-        return render_template('upload.html', content = extension_ifo_list )
+        #Saves list of extensions
+        for i in range(len(extension_info_list)):
+            extension_info_list[i][5] = round(extension_info_list[i][5],1)
 
-@app.route("/auto_complete", methods=["POST"])
+        return render_template('upload.html', content = extension_info_list )
+
+@app.route("/auto_complete", methods = ["POST"])
 def auto_complete():
     output = request.get_json()
     print(output)
@@ -177,22 +201,24 @@ def pie(filename):
     with open(filename,"rb") as f:
         bytes = f.read() # read entire file as bytes
         readable_hash = hashlib.sha256(bytes).hexdigest();
+
     print(readable_hash)
     result = mongo_API.getByHash(readable_hash)
+
     labels = []
     sizes = []
     explode = []
-    vtResult = dict(result["virusTotal"])
-    vtTotal = result["virusTotalSum"]
+    vt_result = dict(result["virusTotal"])
+    vt_total = result["virusTotalSum"]
 
     #Iterates through vt results and adds correct values labels, sizes, and explode
-    for key in vtResult:
+    for key in vt_result:
         #If no engines flagged don't include in pie chart
-        if vtResult[key] > 0:
-            val = vtResult[key]
+        if vt_result[key] > 0:
+            val = vt_result[key]
             #Sets useful label: type \n (percent, nr)
-            labels.append(f"{key}\n({round(val/vtTotal*100,1)}%, {val})")
-            sizes.append(vtResult[key])
+            labels.append(f"{key}\n({round(val/vt_total*100,1)}%, {val})")
+            sizes.append(vt_result[key])
             #highlight slices if they are malicious or supicious
             if key in ["malicious", "suspicious"]:
                 explode.append(0.1)
@@ -204,7 +230,6 @@ def pie(filename):
     ax.pie(sizes, labels = labels, explode = explode, startangle=45,
     wedgeprops={'linewidth': 1.0, 'edgecolor': 'white'})
 
-
     ax.axis('equal')
     # Save it to a temporary buffer.
     buf = BytesIO()
@@ -212,21 +237,17 @@ def pie(filename):
 
     # Embed the result in the html output.
     data = base64.b64encode(buf.getbuffer()).decode("ascii")
-    # print(data)
-    # test = 'data:image/png;base64,'+data+"'"
-    # return test
     return result, f"data:image/png;base64,{data}"
 
 def history(id):
-
     result = list(mongo_API.getById(id))
 
     dates = []
     risks = []
     for object in result:
         #adds just the date as time isn't that important and cuts the first two numbers of the year
-        dates.append(str(object['meta']["date"]).split()[0][2:])
-        risks.append(int(object["risk"]))
+        dates.append(str(object["meta"]["date"]).split()[0][2:])
+        risks.append(int(object["retireSeverity"]))
 
     #Sorts risks dependant on the order of dates
     #zip the lists to a touple list
@@ -240,14 +261,31 @@ def history(id):
     #overwrite risks with sorted version
     risks = temp
 
-    #
     #sort dates
     dates.sort()
 
     fig, ax = Figure.subplots()
     #define chart
 
-    ax.plot(dates, risks)
+    #
+    none = []
+    low = []
+    medium = []
+    high = []
+    critical = []
+    for x in risks:
+        none.append(x["none"])
+        low.append(x["low"])
+        medium.append(x["medium"])
+        high.append(x["high"])
+        critical.append(x["critical"])
+
+    ax.plot(dates, none, label="none")
+    ax.plot(dates, low, label="low")
+    ax.plot(dates, medium, label="medium")
+    ax.plot(dates, high, label="high")
+    ax.plot(dates, critical, label="critical")
+
     ax.set_xlabel("Time")
     ax.set_ylabel("Risk")
     # Save it to a temporary buffer.
