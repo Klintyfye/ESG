@@ -93,7 +93,7 @@ def getById(cwsId: str) -> list:
         "database": "ESG",
         "dataSource": "ESG-DB",
         "filter": {
-            "cwsId": cwsId
+            "meta.cwsId": cwsId
         },
         "projection": {
             "_id":0
@@ -130,17 +130,28 @@ def deleteOne(hash: str) -> Literal[0,1]:
     response = requests.request("POST", url, headers=headers, data=payload)
     return json.loads(response.text)["deletedCount"]
 
+import datetime
+
 if __name__ == '__main__':
     print("Start demo:\n")
     while 1:
         usrInput = input("1:insert\n2:find\n3:find multiple\n4:delete\nq:quit\n")
         match usrInput:
             case "1":
-                cwsId = input("Insert cwsId: ")
-                hash = input("Insert hash: ")
-                object = {"cwsId":cwsId, "hash": hash}
-                print("Result:")
-                print(insertOne(object))
+                template = {}
+                template["meta"] = {}
+                template["meta"]["date"] = str(input("\"date\": "))
+                template["meta"]["cwsId"] = str(input("cwsId: "))
+                template["hash"] = str(input("hash: "))
+                template["retireSeverity"] = {
+                    "none":1,
+                    "low":2,
+                    "medium":3,
+                    "high":4,
+                    "critical":5
+                    }
+
+                print(insertOne(template))
             case "2":
                 hash = input("Insert hash: ")
                 print("Result:")
