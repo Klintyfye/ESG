@@ -1,6 +1,5 @@
 #!/bin/bash
 echo "start"
-sudo apt update
 
 npm=0
 retire=0
@@ -11,6 +10,8 @@ else
 	echo "not running linux-gnu"
 	exit 0
 fi
+
+sudo apt update
 
 ###
 
