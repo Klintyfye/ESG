@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}"/>
+    <link rel="stylesheet" href="static/loading.css"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
@@ -20,75 +20,10 @@
             Analyzing Data <p id="timer3" ></p>
             <br/> <br/>
             Uploading to the database <p id="timer4" ></p>
-            <!-- <br/> <br/> -->
-            <!-- Currently in stage <p id="stage"></p> -->
+            <br/> <br/>
+            Currently in stage <p id="stage"></p>
 
-            
-            <script>
-
-
-            var task1timer = 0; 
-            var task2timer = 0;
-            var task3timer = 0;
-            var task4timer = 0;
-            var stage = 1; //What task we're currently on is stored here. 
-            const start = new Date().getTime();
-            var x = setInterval(function(task){
-                var now = new Date().getTime();
-                var distance = Math.floor((now-start)/1000);
-                distance = distance - task1timer - task2timer - task3timer - task4timer;
-                // document.getElementById("stage").innerHTML = stage;
-                if (stage == 1){ //VT is working...
-                    document.getElementById("timer1").innerHTML = distance;
-                }
-                if (stage == 1 && distance > 4){ //TODO: Replace this with VT completion.
-                    stage = 2;
-                    if (task1timer == 0){
-                        task1timer = distance;
-                    }
-                    document.getElementById("timer1").innerHTML = "Done in " + task1timer.toString();
-
-                }
-                if (stage == 2){ //RetireJS is working...
-                    document.getElementById("timer2").innerHTML = distance;
-                }
-                if (stage == 2 && distance > 5){ //TODO: Replace this with RetireJS completion.
-                    stage = 3;
-                    if (task2timer == 0){
-                        task2timer = distance;
-                    }
-                    document.getElementById("timer2").innerHTML = "Done in " + task2timer.toString();
-                }
-                if (stage == 3){ //Data is being analyzed...
-                    document.getElementById("timer3").innerHTML = distance;
-                }
-                if (stage == 3 && distance > 7){ //TODO: Replace this with analyze completion.
-                    stage = 4;
-                    if (task3timer == 0){
-                        task3timer = distance;
-                    }
-                    document.getElementById("timer3").innerHTML = "Done in " + task3timer.toString();
-                }
-                if (stage == 4){ //Data is being uploaded to the database...
-                    document.getElementById("timer4").innerHTML = distance;
-                }
-                if (stage == 4 && distance > 10){ //TODO: Replace this with DB completion
-                    stage = 5;
-                    if (task4timer == 0){
-                        task4timer = distance;
-                    }
-                    document.getElementById("timer4").innerHTML = "Done in " + task4timer.toString();
-                }
-
-
-
-
-                // document.getElementById("timer1").innerHTML = distance;
-            }, 1000);
-
-            </script>
-            <!-- Scann <input type="checkbox" name="adjective" value="exceptional"> -->
-            
+            <script src="static/loadingtimers.js"></script>
 
             <script>
             function myFunction(){
@@ -97,6 +32,6 @@
                 document.getElementById('form').submit();
             }
             </script>
-    </form> 
+    </form>
     </div>
 </html>

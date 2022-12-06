@@ -4,8 +4,8 @@ from werkzeug.utils import secure_filename
 from fileinput import filename
 from zipfile import ZipFile
 # <<<<<<< HEAD
-import CWS_api
-import fullScan
+import CWS_API
+import scan
 # >>>>>>> cbcc4ee8b36e1e54d42017d9a1fc70f29ba66876
 import crx_downloader
 import time
@@ -15,7 +15,7 @@ import glob
 import base64
 from io import BytesIO
 import matplotlib.pyplot as Figure
-import mongoAPI
+import mongo_API
 from datetime import datetime
 import hashlib
 
@@ -82,29 +82,29 @@ def results():
     with open(path,"rb") as f:
         bytes = f.read() # read entire file as bytes
         readable_hash = hashlib.sha256(bytes).hexdigest();
-    exist = mongoAPI.getByHash(readable_hash)
+    exist = mongo_API.getByHash(readable_hash)
     if( exist == None):
-    
+
         extension_id= path.split('/')[-1]
         # path2 = max(glob.iglob(app.config['UPLOAD_FOLDER'] + '/'+extension_id),key=os.path.getctime)
         if not extension_id.split('.')[-1] == 'crx':
-            extension_info = CWS_api.get_item(extension_id)
+            extension_info = CWS_API.get_item(extension_id)
             for i in range(len(extension_info)):
                 if len(extension_info) > 1:
                     extension_info.pop()
             print(extension_info)
             meta = {"cwsId":extension_id, "name": extension_info[0][1]}
-            fullScan.scan(path, meta)
+            scan.scan(path, meta)
             result, test = pie(path)
             history_img = history(extension_id)
             return render_template("results.html", extension_info = extension_info ,result = result,test = test, test2 = history_img )
         else:
             meta = {"cwsId":"None", "name": extension_id}
-            result = fullScan.scan(path, meta)
+            result = scan.scan(path, meta)
             return render_template("results.html", result=result)
     else:
         extension_id= path.split('/')[-1]
-        extension_info = CWS_api.get_item(extension_id)
+        extension_info = CWS_API.get_item(extension_id)
         result, test = pie(path)
         history_img = history(extension_id)
         print('########################')
@@ -118,7 +118,7 @@ def search():
         if not extension_name:
             flash('No input')
             return redirect('/')
-        extension_ifo_list = CWS_api.get_item(extension_name)
+        extension_ifo_list = CWS_API.get_item(extension_name)
         if extension_ifo_list == []:
             flash('No extensions found')
             return redirect('/')
@@ -131,8 +131,8 @@ def search():
 def auto_complete():
     output = request.get_json()
     print(output)
-    print(CWS_api.autocomplete(output))
-    suggest_list = CWS_api.autocomplete(output);
+    print(CWS_API.autocomplete(output))
+    suggest_list = CWS_API.autocomplete(output);
     return suggest_list
 
 @app.route('/analyze', methods=['POST', 'GET'])
@@ -154,7 +154,7 @@ def pie(filename):
         bytes = f.read() # read entire file as bytes
         readable_hash = hashlib.sha256(bytes).hexdigest();
     print(readable_hash)
-    result = mongoAPI.getByHash(readable_hash)
+    result = mongo_API.getByHash(readable_hash)
     labels = []
     sizes = []
     explode = []
@@ -190,36 +190,36 @@ def pie(filename):
     data = base64.b64encode(buf.getbuffer()).decode("ascii")
     # print(data)
     # test = 'data:image/png;base64,'+data+"'"
-    # return test 
+    # return test
     return result, f"data:image/png;base64,{data}"
 
 def history(id):
-    
-    result = list(mongoAPI.getById(id))
-    
+
+    result = list(mongo_API.getById(id))
+
     dates = []
     risks = []
     for object in result:
         #adds just the date as time isn't that important and cuts the first two numbers of the year
         dates.append(str(object['meta']["date"]).split()[0][2:])
         risks.append(int(object["risk"]))
-    
+
     #Sorts risks dependant on the order of dates
     #zip the lists to a touple list
     ziped = zip(dates,risks)
-    #Sort 
+    #Sort
     sort = sorted(ziped)
     temp = []
     #add risks to empty list in order of after they've been sorted by dates
     for i in sort:
-       temp.append(i[1]) 
+       temp.append(i[1])
     #overwrite risks with sorted version
     risks = temp
 
     #
     #sort dates
     dates.sort()
-    
+
     fig, ax = Figure.subplots()
     #define chart
 

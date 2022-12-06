@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="{{url_for('static', filename='resultstyles.css')}}"/>
+    <link rel="stylesheet" href="static/results.css"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Results</title>
@@ -24,7 +24,7 @@
                 <h1 id="logo"><a href="upload.html">ESG</a></h1>
             </div>
     </nav>
-    <nav style="background-color: red; height: 700px; width: 50%;float: left;"> 
+    <nav style="background-color: red; height: 700px; width: 50%;float: left;">
         <div id = "extension_info" class="extension_info" style="background-color: rgb(218, 218, 226); height: 120px; width: 100%;">
             {% if extension_info %}
             {% for i in extension_info %}
@@ -37,13 +37,13 @@
             <img src = {{ test }} style="height: 180px; width: 200px;"> </img>
 
         </div>
-        
+
         <div  style="height: 250px; width: 100%; background-color: rgb(196, 36, 84);">
             <img src = {{ test2 }} style="height: 180px; width: 200px;"> </img>
         </div>
     </nav>
-    <nav style="background-color: yellow; height: 700px; width: 50%; float: left;"> 
-        
+    <nav style="background-color: yellow; height: 700px; width: 50%; float: left;">
+
     </nav>
 
 

@@ -1,9 +1,9 @@
 from zipfile import ZipFile
 from typing import Literal
-import mongoAPI
-import resultCompile
-import runRetire
-import virusTotal
+import mongo_API
+import result_compile
+import retire
+import virus_total
 
 def scan(crxDir: str, meta: dict) -> Literal[-1,1]:
     """Takes path of crx and its cwsId and scans, compiles results, and uploads to database
@@ -19,7 +19,7 @@ def scan(crxDir: str, meta: dict) -> Literal[-1,1]:
     print("Börja vt")
     #how ever tf you run the virus total api idk how to make it work nicely.
     vtDir = "vtResult.json"
-    virusTotal.virustotal(crxDir)
+    virus_total.virustotal(crxDir)
 
 
     #Name of folder which the crx extracts into
@@ -30,20 +30,20 @@ def scan(crxDir: str, meta: dict) -> Literal[-1,1]:
 
     print("Börja retire")
     #Run retireJS scan on folder and create result json "retireResult.json"
-    runRetire.runRetire(extractedDir)
+    retire.runRetire(extractedDir)
     jsDir = "retireResult.json"
 
     print("Börja compile")
     #Compiles results from retireJS and virusTotal
-    object = resultCompile.compileResult(jsDir, vtDir, meta)
+    object = result_compile.compileResult(jsDir, vtDir, meta)
 
     #Inserts result json into db
     print(object)
     #Check if cwsId is None indiciating that it's a local extension and not to be uploaded
     if object["meta"]["cwsId"] == "None":
         return 1
-    
-    return mongoAPI.insertOne(object)
+
+    return mongo_API.insertOne(object)
 
 
 if __name__ == '__main__':
