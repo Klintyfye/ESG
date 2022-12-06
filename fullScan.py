@@ -13,7 +13,7 @@ def scan(crxDir: str, meta: dict) -> Literal[-1,1]:
         meta (dict): dictionary of meta data including: cwsId (chrome web store id), extension name etc...
 
     Returns:
-        Literal[0,1]: returns 1 on databse upload success or -1 on databse upload failure.
+        Literal[0,1]: returns 1 on databse upload success or local extension scan, or -1 on database upload failure.
     """
 
     print("Börja vt")
@@ -39,6 +39,10 @@ def scan(crxDir: str, meta: dict) -> Literal[-1,1]:
 
     #Inserts result json into db
     print(object)
+    #Check if cwsId is None indiciating that it's a local extension and not to be uploaded
+    if object["meta"]["cwsId"] == "None":
+        return 1
+    
     return mongoAPI.insertOne(object)
 
 
