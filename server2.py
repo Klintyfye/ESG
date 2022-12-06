@@ -108,7 +108,7 @@ def results():
         # test = test[1:-2]
         # print(test)
         # print(extension_name.split('.')[0])
-        extension_info = api.get_item(extension_name)
+        extension_info = CWS_api.get_item(extension_name)
         for i in range(len(extension_info)):
             if len(extension_info) > 1:
                 extension_info.pop()
