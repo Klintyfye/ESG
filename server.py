@@ -240,15 +240,14 @@ def pie(filename):
     return result, f"data:image/png;base64,{data}"
 
 def history(id):
-
     result = list(mongo_API.getById(id))
 
     dates = []
     risks = []
     for object in result:
         #adds just the date as time isn't that important and cuts the first two numbers of the year
-        dates.append(str(object['meta']["date"]).split()[0][2:])
-        risks.append(int(object["risk"]))
+        dates.append(str(object["meta"]["date"]).split()[0][2:])
+        risks.append(int(object["retireSeverity"]))
 
     #Sorts risks dependant on the order of dates
     #zip the lists to a touple list
@@ -262,14 +261,31 @@ def history(id):
     #overwrite risks with sorted version
     risks = temp
 
-    #
     #sort dates
     dates.sort()
 
     fig, ax = Figure.subplots()
     #define chart
 
-    ax.plot(dates, risks)
+    #
+    none = []
+    low = []
+    medium = []
+    high = []
+    critical = []
+    for x in risks:
+        none.append(x["none"])
+        low.append(x["low"])
+        medium.append(x["medium"])
+        high.append(x["high"])
+        critical.append(x["critical"])
+
+    ax.plot(dates, none, label="none")
+    ax.plot(dates, low, label="low")
+    ax.plot(dates, medium, label="medium")
+    ax.plot(dates, high, label="high")
+    ax.plot(dates, critical, label="critical")
+
     ax.set_xlabel("Time")
     ax.set_ylabel("Risk")
     # Save it to a temporary buffer.
