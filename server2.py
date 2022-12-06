@@ -83,28 +83,23 @@ def upload_file():
 @app.route('/results', methods=['POST', 'GET'])
 def results():
     path = max(glob.iglob(app.config['UPLOAD_CRX_FOLDER']+'/*'),key=os.path.getctime)
-    with open(path,"rb") as f:
-        bytes = f.read() # read entire file as bytes
-        readable_hash = hashlib.sha256(bytes).hexdigest();
-    exist = mongoAPI.getByHash(readable_hash)
-    if( exist == None):
-        extension_id= path.split('/')[-1]
-        # path2 = max(glob.iglob(app.config['UPLOAD_FOLDER'] + '/'+extension_id),key=os.path.getctime)
-        if not extension_id.split('.')[-1] == 'crx':
-            extension_info = CWS_api.get_item(extension_id)
-            for i in range(len(extension_info)):
-                if len(extension_info) > 1:
-                    extension_info.pop()
-            print(extension_info)
-            meta = {"cwsId":extension_id, "name": extension_info[0][1]}
-            fullScan.scan(path, meta)
-            result, test = pie(path)
-            history = history(extension_id)
-            return render_template("results.html", extension_info = extension_info ,result = result,test = test, test2 = history )
-        else:
-            meta = {"cwsId":None, "name": extension_id}
-            result = fullScan.scan(path, meta)
-            return render_template("results.html", result=result)
+    extension_name= path.split('/')[-1]
+    path2 = max(glob.iglob(app.config['UPLOAD_FOLDER'] + '/'+extension_name),key=os.path.getctime)
+    if not extension_name.split('.')[-1] == 'crx':
+        # print(path, '\n', path2, '\n', extension_name )
+        # virustotal.virustotal(path)
+        # retireJS.retireJS(path2)
+        # test = pie()
+        # test = test[1:-2]
+        # print(test)
+        # print(extension_name.split('.')[0])
+        extension_info = api.get_item(extension_name)
+        for i in range(len(extension_info)):
+            if len(extension_info) > 1:
+                extension_info.pop()
+        print(extension_info)
+
+        return render_template("results.html", extension_info = extension_info ,test = pie(), test2 =  history() )
     else:
         extension_id= path.split('/')[-1]
         extension_info = CWS_api.get_item(extension_id)

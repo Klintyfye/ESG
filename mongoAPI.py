@@ -10,16 +10,18 @@ APIKEY="y4UK7S7A8KY6xKIhBlkx2DBqWO0H0OQNzkSB6JaSIh4BfaqKfjqWVbe3TkPmcBs6"
 #Insert json
 def insertOne(object: dict) -> Literal[-1,1]:
     """Insert json into database.
-
     Args:
         object (dict): json to be inserted loaded as a dict.
-
     Returns:
         Literal[-1,1]: returns 1 on success, -1 if file with hash already exists.
     """
 
+    #Check if cwsId is None indiciating that it's a local extension and not to be uploaded
+    if object["meta"]["cwsId"] == "None":
+        return -1
+        
     #Check if document with identical hash exists in db
-    if(getByHash(object["hash"]) != None):
+    if getByHash(object["hash"]) != None:
         return -1
 
 
@@ -45,16 +47,11 @@ def insertOne(object: dict) -> Literal[-1,1]:
 
 def getByHash(hash: str) -> dict|None:
     """Fetches single (first) json with matching hash value.
-
     (should only ever be one not accounting for errors.)
-
-
     Args:
         hash (str): hash of crx.
-
     Returns:
         dict: Returns dict of item on success.
-
         dict: returns None if no matches found.
     """
 
@@ -83,14 +80,11 @@ def getByHash(hash: str) -> dict|None:
 
 def getById(cwsId: str) -> list:
     """Fetches a dictionary with a list of json with matching cwsId.
-
     Args:
         cwsId (str): Chrome Web Store Id.
-
     Returns:
-        list: Returns list of items (dicts) with matching [cwsId].
-
-        list: returns [] if no matches found.
+        list: returns list of items (dicts) with matching [cwsId].
+        list: returns [] on failure.
     """
 
     url = "https://data.mongodb-api.com/app/data-jkbjv/endpoint/data/v1/action/find"
@@ -117,10 +111,8 @@ def getById(cwsId: str) -> list:
 #Drop json by filter
 def deleteOne(hash: str) -> Literal[0,1]:
     """Drops json with hash value matching hash.
-
     Args:
         hash (str): hash value of crx.
-
     Returns:
         Literal[0,1]: returns 1 on success, 0 on failure
     """
