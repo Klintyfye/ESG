@@ -2,52 +2,58 @@ import os      # For File Manipulations like get paths, rename
 from flask import Flask, flash, request, redirect, render_template, url_for
 from werkzeug.utils import secure_filename
 from fileinput import filename
-from zipfile import ZipFile
 # <<<<<<< HEAD
+
+# =======
 import CWS_API
 import scan
 # >>>>>>> cbcc4ee8b36e1e54d42017d9a1fc70f29ba66876
 import crx_downloader
-import time
 import glob
-
 
 import base64
 from io import BytesIO
 import matplotlib.pyplot as Figure
 import mongo_API
-from datetime import datetime
 import hashlib
 
 
-
-
-
-
-
+#????????????????????????
 app=Flask(__name__, template_folder='Templates/')
-app.secret_key = "juvsnpqb##?+`okojpj##¤¤%&#pakia" # for encrypting the sessions
+
+#Secret key for encrypting sessions
+app.secret_key = "juvsnpqb##?+`okojpj##¤¤%&#pakia"
+
 #It will allow below 250MB contents only, you can change it
 app.config['MAX_CONTENT_LENGTH'] = 250 * 1024 * 1024
+
+#Get current working directory
 path = os.getcwd()
-# file Upload
+"""current workign directory"""
+
+#Sets path of crx upload folder
 UPLOAD_CRX_FOLDER = os.path.join(path, 'crxuploads')
-# Make directory if "uploads" folder not exists
+"""crx upload folder directory"""
+#Make directory if "uploads" folder not exists
 if not os.path.isdir(UPLOAD_CRX_FOLDER):
     os.mkdir(UPLOAD_CRX_FOLDER)
 app.config['UPLOAD_CRX_FOLDER'] = UPLOAD_CRX_FOLDER
-#unzipd crxfile folder
+
+#Unzipped crxfile folder
 UPLOAD_FOLDER = os.path.join(path, 'uploads')
-# Make directory if "uploads" folder not exists
+"""unzipped upload folder directory"""
+#Make directory if "uploads" folder not exists
 if not os.path.isdir(UPLOAD_FOLDER):
     os.mkdir(UPLOAD_FOLDER)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+#Sets allowed file extension
 ALLOWED_EXTENSIONS = set(['crx'])
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-
+#Renders upload html as root page
 @app.route('/')
 def upload_form():
     """Rendering the upload.html file"""
@@ -60,33 +66,49 @@ def upload_file():
     scans the file and the unzipd folder in virustotal and retireJS
     returen: INTE KLAR ÄN
     """
+
+    #Checks request method. If not post, don't do anything
     if request.method == 'POST':
+
+        #Read file by filename from html
         file = request.files['crxfile']
+        #Cancel if no file was uploaded
         if not file:
             flash('No file uploaded!')
             return redirect('/')
+        #If allowed file was upploaded get the name and save the file.
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_CRX_FOLDER'], filename))
+        #If file is not of allowed type, flash error and cancel
         else:
             flash('Only crx files')
             return redirect('/')
+        
+        #If everything was successful move on to loading.html 
         flash('File successfully uploaded')
         return render_template('loading.html')
 
 
-
 @app.route('/results', methods=['POST', 'GET'])
 def results():
+    #Chose most recently uploaded crx as path
     path = max(glob.iglob(app.config['UPLOAD_CRX_FOLDER']+'/*'),key=os.path.getctime)
+    """path to crx"""
+    #Get hash of crx
     with open(path,"rb") as f:
         bytes = f.read() # read entire file as bytes
-        readable_hash = hashlib.sha256(bytes).hexdigest();
-    exist = mongo_API.getByHash(readable_hash)
-    if( exist == None):
+        readable_hash = hashlib.sha256(bytes).hexdigest()
 
-        extension_id= path.split('/')[-1]
-        # path2 = max(glob.iglob(app.config['UPLOAD_FOLDER'] + '/'+extension_id),key=os.path.getctime)
+    #Check if extension already exists in database
+    exist = mongo_API.getByHash(readable_hash)
+
+    #if extension is in database
+    if exist == None:
+        #Get extension id
+        extension_id = path.split('/')[-1]
+
+        #Extension id ending in crx signifies local upload 
         if not extension_id.split('.')[-1] == 'crx':
             extension_info = CWS_API.get_item(extension_id)
             for i in range(len(extension_info)):
@@ -96,17 +118,18 @@ def results():
             meta = {"cwsId":extension_id, "name": extension_info[0][1]}
             scan.scan(path, meta)
             result, test = pie(path)
-            history_img = history(extension_id)
-            return render_template("results.html", extension_info = extension_info ,result = result,test = test, test2 = history_img )
+            history = history(extension_id)
+            return render_template("results.html", extension_info = extension_info ,result = result,test = test, test2 = history )
+        #Extension id NOT ending in crx signifies CWS upload
         else:
-            meta = {"cwsId":"None", "name": extension_id}
+            meta = {"cwsId":None, "name": extension_id}
             result = scan.scan(path, meta)
             return render_template("results.html", result=result)
+    #if database is not in database already
     else:
         extension_id= path.split('/')[-1]
         extension_info = CWS_API.get_item(extension_id)
         result, test = pie(path)
-        history_img = history(extension_id)
         print('########################')
         return render_template("results.html", result = exist, extension_info = extension_info,test = test, test2 = history_img)
 
@@ -190,36 +213,36 @@ def pie(filename):
     data = base64.b64encode(buf.getbuffer()).decode("ascii")
     # print(data)
     # test = 'data:image/png;base64,'+data+"'"
-    # return test
+    # return test 
     return result, f"data:image/png;base64,{data}"
 
 def history(id):
-
+    
     result = list(mongo_API.getById(id))
-
+    
     dates = []
     risks = []
     for object in result:
         #adds just the date as time isn't that important and cuts the first two numbers of the year
         dates.append(str(object['meta']["date"]).split()[0][2:])
         risks.append(int(object["risk"]))
-
+    
     #Sorts risks dependant on the order of dates
     #zip the lists to a touple list
     ziped = zip(dates,risks)
-    #Sort
+    #Sort 
     sort = sorted(ziped)
     temp = []
     #add risks to empty list in order of after they've been sorted by dates
     for i in sort:
-       temp.append(i[1])
+       temp.append(i[1]) 
     #overwrite risks with sorted version
     risks = temp
 
     #
     #sort dates
     dates.sort()
-
+    
     fig, ax = Figure.subplots()
     #define chart
 
