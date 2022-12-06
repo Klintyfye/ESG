@@ -4,10 +4,6 @@ from werkzeug.utils import secure_filename
 from fileinput import filename
 from zipfile import ZipFile
 # <<<<<<< HEAD
-import api 
-# =======
-
-import api
 import CWS_api
 import fullScan
 # >>>>>>> cbcc4ee8b36e1e54d42017d9a1fc70f29ba66876
@@ -88,6 +84,7 @@ def results():
         readable_hash = hashlib.sha256(bytes).hexdigest();
     exist = mongoAPI.getByHash(readable_hash)
     if( exist == None):
+    
         extension_id= path.split('/')[-1]
         # path2 = max(glob.iglob(app.config['UPLOAD_FOLDER'] + '/'+extension_id),key=os.path.getctime)
         if not extension_id.split('.')[-1] == 'crx':
@@ -99,19 +96,19 @@ def results():
             meta = {"cwsId":extension_id, "name": extension_info[0][1]}
             fullScan.scan(path, meta)
             result, test = pie(path)
-            history = history(extension_id)
-            return render_template("results.html", extension_info = extension_info ,result = result,test = test, test2 = history )
+            history_img = history(extension_id)
+            return render_template("results.html", extension_info = extension_info ,result = result,test = test, test2 = history_img )
         else:
-            meta = {"cwsId":None, "name": extension_id}
+            meta = {"cwsId":"None", "name": extension_id}
             result = fullScan.scan(path, meta)
             return render_template("results.html", result=result)
     else:
         extension_id= path.split('/')[-1]
         extension_info = CWS_api.get_item(extension_id)
         result, test = pie(path)
-        test2 = history(extension_id)
+        history_img = history(extension_id)
         print('########################')
-        return render_template("results.html", result = exist, extension_info = extension_info)
+        return render_template("results.html", result = exist, extension_info = extension_info,test = test, test2 = history_img)
 
 @app.route('/search', methods=['POST', 'GET'])
 def search():
