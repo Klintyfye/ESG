@@ -84,8 +84,8 @@ def upload_file():
         else:
             flash('Only crx files')
             return redirect('/')
-        
-        #If everything was successful move on to loading.html 
+
+        #If everything was successful move on to loading.html
         flash('File successfully uploaded')
         return render_template('loading.html')
 
@@ -108,7 +108,7 @@ def results():
         #Get extension id
         extension_id = path.split('/')[-1]
 
-        #Extension id ending in crx signifies local upload 
+        #Extension id ending in crx signifies local upload
         if not extension_id.split('.')[-1] == 'crx':
             extension_info = CWS_API.get_item(extension_id)
             for i in range(len(extension_info)):
@@ -118,8 +118,8 @@ def results():
             meta = {"cwsId":extension_id, "name": extension_info[0][1]}
             scan.scan(path, meta)
             result, test = pie(path)
-            history = history(extension_id)
-            return render_template("results.html", extension_info = extension_info ,result = result,test = test, test2 = history )
+            history_img = history(extension_id)
+            return render_template("results.html", extension_info = extension_info ,result = result,test = test, test2 = history_img )
         #Extension id NOT ending in crx signifies CWS upload
         else:
             meta = {"cwsId":None, "name": extension_id}
@@ -129,9 +129,10 @@ def results():
     else:
         extension_id= path.split('/')[-1]
         extension_info = CWS_API.get_item(extension_id)
+        history_img = history(extension_id)
         result, test = pie(path)
         print('########################')
-        return render_template("results.html", result = exist, extension_info = extension_info,test = test, test2 = history_img)
+        return render_template("results.html", result = exist, extension_info = extension_info, test = test, test2 = history_img)
 
 @app.route('/search', methods=['POST', 'GET'])
 def search():
@@ -213,36 +214,36 @@ def pie(filename):
     data = base64.b64encode(buf.getbuffer()).decode("ascii")
     # print(data)
     # test = 'data:image/png;base64,'+data+"'"
-    # return test 
+    # return test
     return result, f"data:image/png;base64,{data}"
 
 def history(id):
-    
+
     result = list(mongo_API.getById(id))
-    
+
     dates = []
     risks = []
     for object in result:
         #adds just the date as time isn't that important and cuts the first two numbers of the year
         dates.append(str(object['meta']["date"]).split()[0][2:])
         risks.append(int(object["risk"]))
-    
+
     #Sorts risks dependant on the order of dates
     #zip the lists to a touple list
     ziped = zip(dates,risks)
-    #Sort 
+    #Sort
     sort = sorted(ziped)
     temp = []
     #add risks to empty list in order of after they've been sorted by dates
     for i in sort:
-       temp.append(i[1]) 
+       temp.append(i[1])
     #overwrite risks with sorted version
     risks = temp
 
     #
     #sort dates
     dates.sort()
-    
+
     fig, ax = Figure.subplots()
     #define chart
 

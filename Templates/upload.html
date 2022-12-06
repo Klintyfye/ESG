@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="static/upload.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
-    <script src="./static/rating.js"></script>
+    <script src="/static/rating.js"></script>
 </head>
 <body>
     <nav id="nav1">
@@ -18,10 +18,10 @@
                 <span>home</span>
             </li>
         </ul>
-            <div id="logga">
-                <a href="/"><img id="logoimg" src=".\static\logo.png"></a>
-                <h1 id="logo"><a href="/">ESG</a></h1>
-            </div>
+        <div id="logga">
+            <a href="/"><img id="logoimg" src=".\static\logo.png"></a>
+            <h1 id="logo"><a href="/">ESG</a></h1>
+        </div>
     </nav>
     <div id="main_page">
         <h1 id="tagline">Search for or submit an extension file to scan</h1>
@@ -81,7 +81,7 @@
                                 // Set width of stars-inner to percentage
                                 document.querySelector(`.{{ i[6] }} .stars-inner`).style.width = starPercentageRounded;
                                 // Add number rating
-                                document.querySelector(`.{{ i[6] }} .number-rating`).innerHTML = rating;
+                                document.querySelector(`.{{ i[6] }} .number-rating`).innerHTML = {{ i[5] }};
                             </script>
                     </div>
                 </form>

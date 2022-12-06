@@ -7,28 +7,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="static/logo.png">
     <link rel="stylesheet" href="static/results.css"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
+    <script src="/static/rating.js"></script>
 </head>
 <body>
-    <nav id="nav1" class = "nav1">
+    <nav id="nav1">
         <ul>
-            <li style=" float:right;">
-                <label class="switch">
-                    <input type="checkbox" id="toggle_theme_btn" onclick="toggle_theme()">
-                    <span class="slider round"></span>
-                </label>
+            <li style=" float:left;">
+                <span>home</span>
             </li>
         </ul>
-            <div id="logga">
-                <a href="upload.html"><img id="logoimg" src=".\static\logo.png"></a>
-                <h1 id="logo"><a href="upload.html">ESG</a></h1>
-            </div>
+        <div id="logga">
+            <a href="/"><img id="logoimg" src=".\static\logo.png"></a>
+            <h1 id="logo"><a href="/">ESG</a></h1>
+        </div>
     </nav>
+    {% if extension_info %}
+    {% for i in extension_info %}
+        <div id="desc_box">
+            <image id="ext_img" src={{ i[2] }}></image>
+            <div id="ext_name">Name: {{ i[1] }}</div>
+            <div id="ext_id">ID: <i>{{ i[6] }}</i></div>
+            <div id="ext_desc">Description: {{ i[3] }}</div>
+            <div id="ext_rating">
+                <div class="stars-outer">
+                    <div class="stars-inner"></div>
+                </div>
+                <span class="number-rating"></span>
+                <i>, {{ i[4] }} ratings</i>
+            </div>
+                <script>
+                    let rating = Math.round({{ i[5] }} * 10) / 10;
+                    // Get percentage. This line might return 3 errors. These are just the IDE not understanding whats happening.
+                    starPercentage = (rating / 5) * 100;
+                    // Round to nearest 10
+                    starPercentageRounded = `${Math.round(starPercentage / 10) * 10}%`;
+                    // Set width of stars-inner to percentage
+                    document.querySelector(`.stars-inner`).style.width = starPercentageRounded;
+                    // Add number rating
+                    document.querySelector(`.number-rating`).innerHTML = rating;
+                </script>
+        </div>
+    {% endfor %}
+    {% endif %}
     <nav style="background-color: red; height: 700px; width: 50%;float: left;">
         <div id = "extension_info" class="extension_info" style="background-color: rgb(218, 218, 226); height: 120px; width: 100%;">
             {% if extension_info %}
             {% for i in extension_info %}
-            <a ><img id="extensionimg" src={{ i[2]  }} style="height: 100px; width: 100px;"></a>
+            <img id="extensionimg" src={{ i[2]  }} style="height: 100px; width: 100px;">
             <a style="float: right;"><h2>{{ i[1]}}</h2></a>
+            <script>
+            </script>
             {% endfor %}
             {% endif %}
         </div>
@@ -42,9 +71,12 @@
         </div>
     </nav>
     <nav style="background-color: yellow; height: 700px; width: 50%; float: left;">
-
+        <p>{{ result }}</p>
     </nav>
 
 
 </body>
+<footer id="footer1">
+    Product made by ESG for ©SoftHouse
+</footer>
 </html>
