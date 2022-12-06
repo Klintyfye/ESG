@@ -3,9 +3,7 @@ import requests
 import json
 from typing import Literal
 
-APIKEY="y4UK7S7A8KY6xKIhBlkx2DBqWO0H0OQNzkSB6JaSIh4BfaqKfjqWVbe3TkPmcBs6"
-
-# APIKEY = constants.APIKEY
+APIKEY = constants.APIKEY
 
 #Insert json
 def insertOne(object: dict) -> Literal[-1,1]:
@@ -15,15 +13,10 @@ def insertOne(object: dict) -> Literal[-1,1]:
     Returns:
         Literal[-1,1]: returns 1 on success, -1 if file with hash already exists.
     """
-
-    #Check if cwsId is None indiciating that it's a local extension and not to be uploaded
-    if object["meta"]["cwsId"] == "None":
-        return -1
         
     #Check if document with identical hash exists in db
     if getByHash(object["hash"]) != None:
         return -1
-
 
     url = "https://data.mongodb-api.com/app/data-jkbjv/endpoint/data/v1/action/insertOne"
     headers = {
@@ -44,7 +37,6 @@ def insertOne(object: dict) -> Literal[-1,1]:
     requests.request("POST", url, headers=headers, data=payload)
     return 1
 
-
 def getByHash(hash: str) -> dict|None:
     """Fetches single (first) json with matching hash value.
     (should only ever be one not accounting for errors.)
@@ -54,8 +46,6 @@ def getByHash(hash: str) -> dict|None:
         dict: Returns dict of item on success.
         None: returns None if no matches found.
     """
-
-
 
     url = "https://data.mongodb-api.com/app/data-jkbjv/endpoint/data/v1/action/findOne"
     headers = {
@@ -86,6 +76,10 @@ def getById(cwsId: str) -> list:
         list: returns list of items (dicts) with matching [cwsId].
         list: returns [] on failure.
     """
+
+    #Check if cwsId is None indiciating that it's a local extension and doesn't have a history
+    if cwsId == "None":
+        return []
 
     url = "https://data.mongodb-api.com/app/data-jkbjv/endpoint/data/v1/action/find"
     headers = {
