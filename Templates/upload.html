@@ -74,25 +74,14 @@
                             <i>, {{ i[4] }} ratings</i>
                         </div>
                             <script>
-                                rating = {{ i[5] }};
-                                console.log(rating);
-
                                 // Get percentage
-                                starPercentage = (rating / 5) * 100;
-
-                                console.log(starPercentage);
-
+                                starPercentage = ({{ i[5] }} / 5) * 100;
                                 // Round to nearest 10
                                 starPercentageRounded = `${Math.round(starPercentage / 10) * 10}%`;
-
-                                console.log(starPercentageRounded);
-
                                 // Set width of stars-inner to percentage
                                 document.querySelector(`.{{ i[6] }} .stars-inner`).style.width = starPercentageRounded;
-
                                 // Add number rating
                                 document.querySelector(`.{{ i[6] }} .number-rating`).innerHTML = rating;
-
                             </script>
                     </div>
                 </form>

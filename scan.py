@@ -3,7 +3,7 @@ from typing import Literal
 import mongo_API
 import result_compile
 import retire
-import virus_total
+import virustotal
 
 def scan(crxDir: str, meta: dict) -> Literal[-1,1]:
     """Takes path of crx and its cwsId and scans, compiles results, and uploads to database
@@ -19,7 +19,7 @@ def scan(crxDir: str, meta: dict) -> Literal[-1,1]:
     print("Börja vt")
     #how ever tf you run the virus total api idk how to make it work nicely.
     vtDir = "vtResult.json"
-    virus_total.virustotal(crxDir)
+    virustotal.virustotal(crxDir)
 
 
     #Name of folder which the crx extracts into

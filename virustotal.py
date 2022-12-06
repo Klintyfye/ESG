@@ -18,14 +18,14 @@ def url_for_large_file():
         "accept": "application/json",
         "x-apikey": "51bff97d51ac2996b0b64155402f55cc8960cdfbfcd3f5361eff4fd9f2dc65b2"
     }
-    
+
     first_second_response = requests.get(url_for_large_files, headers=first_header)
     while (first_second_response.text[cnt] != '"'):
         refined_url += first_second_response.text[cnt]
         cnt += 1
     time.sleep(3)
     return refined_url
-    
+
 
 def url_for_upload(path):
     url_for_upload = url_for_large_file()
@@ -54,7 +54,7 @@ def url_for_upload(path):
     time.sleep(5)
     #print(stringedRes)
     return stringedRes
-    
+
 
 def url_for_analysis_report(path):
     rest_of_string = url_for_upload(path)
@@ -66,7 +66,7 @@ def url_for_analysis_report(path):
     third_response = requests.get(url_for_analysis_report, headers=fourth_header)
     json_data = json.loads(third_response.text)
     return json_data
-    
+
 def if_file_queued(path):
     switch = True
     while switch:
@@ -75,16 +75,16 @@ def if_file_queued(path):
             switch = False
             break
         print("Process is in queue, please wait...")
-        time.sleep(5) 
+        time.sleep(5)
     filename = "vtResult.json"
     sha256_value = info["meta"]["file_info"]["sha256"]
     #print(sha256_value)
     with open(filename, "w") as file_object:
-        json.dump(info, file_object) 
+        json.dump(info, file_object)
     #time.sleep(3)
     return sha256_value
-    
-    
+
+
 
 def url_for_analysis_report_from_hash(path):
     sha256 = if_file_queued(path)
