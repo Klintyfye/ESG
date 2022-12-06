@@ -52,7 +52,7 @@ def getByHash(hash: str) -> dict|None:
         hash (str): hash of crx.
     Returns:
         dict: Returns dict of item on success.
-        dict: returns None if no matches found.
+        None: returns None if no matches found.
     """
 
 
