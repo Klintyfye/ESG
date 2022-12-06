@@ -4,12 +4,12 @@ from werkzeug.utils import secure_filename
 from fileinput import filename
 from zipfile import ZipFile
 # <<<<<<< HEAD
-import retireJS
-import virustotal
+import api 
 # =======
-import retireJS
-import virustotal
+
+import api
 import CWS_api
+import fullScan
 # >>>>>>> cbcc4ee8b36e1e54d42017d9a1fc70f29ba66876
 import crx_downloader
 import time
@@ -21,7 +21,7 @@ from io import BytesIO
 import matplotlib.pyplot as Figure
 import mongoAPI
 from datetime import datetime
-
+import hashlib
 
 
 
@@ -57,10 +57,6 @@ def upload_form():
     """Rendering the upload.html file"""
     return render_template('upload.html')
 
-
-def loading():
-    return render_template('loading.html')
-
 @app.route('/upload', methods=['POST', 'GET'])
 def upload_file():
     """Takes in the uploaded file and save it under crxuploads folder
@@ -73,23 +69,12 @@ def upload_file():
         if not file:
             flash('No file uploaded!')
             return redirect('/')
-        start_time = time.time()
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_CRX_FOLDER'], filename))
-            path = os.path.join(app.config['UPLOAD_CRX_FOLDER'], filename)
-            with ZipFile(path) as crx_unzip:
-            # Extracting all the members of the zip
-            # into a specific location.
-                crx_unzip.extractall(
-                    path = os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            # path2 = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            # virustotal.virustotal(path)
-            # retireJS.retireJS(path2)
         else:
             flash('Only crx files')
             return redirect('/')
-        endtime = (time.time() - start_time)
         flash('File successfully uploaded')
         return render_template('loading.html')
 
@@ -98,25 +83,35 @@ def upload_file():
 @app.route('/results', methods=['POST', 'GET'])
 def results():
     path = max(glob.iglob(app.config['UPLOAD_CRX_FOLDER']+'/*'),key=os.path.getctime)
-    extension_name= path.split('/')[-1]
-    path2 = max(glob.iglob(app.config['UPLOAD_FOLDER'] + '/'+extension_name),key=os.path.getctime)
-    if not extension_name.split('.')[-1] == 'crx':
-        # print(path, '\n', path2, '\n', extension_name )
-        # virustotal.virustotal(path)
-        # retireJS.retireJS(path2)
-        # test = pie()
-        # test = test[1:-2]
-        # print(test)
-        # print(extension_name.split('.')[0])
-        extension_info = api.get_item(extension_name)
-        for i in range(len(extension_info)):
-            if len(extension_info) > 1:
-                extension_info.pop()
-        print(extension_info)
-
-        return render_template("results.html", extension_info = extension_info ,test = pie(), test2 =  history() )
+    with open(path,"rb") as f:
+        bytes = f.read() # read entire file as bytes
+        readable_hash = hashlib.sha256(bytes).hexdigest();
+    exist = mongoAPI.getByHash(readable_hash)
+    if( exist == None):
+        extension_id= path.split('/')[-1]
+        # path2 = max(glob.iglob(app.config['UPLOAD_FOLDER'] + '/'+extension_id),key=os.path.getctime)
+        if not extension_id.split('.')[-1] == 'crx':
+            extension_info = CWS_api.get_item(extension_id)
+            for i in range(len(extension_info)):
+                if len(extension_info) > 1:
+                    extension_info.pop()
+            print(extension_info)
+            meta = {"cwsId":extension_id, "name": extension_info[0][1]}
+            fullScan.scan(path, meta)
+            result, test = pie(path)
+            history = history(extension_id)
+            return render_template("results.html", extension_info = extension_info ,result = result,test = test, test2 = history )
+        else:
+            meta = {"cwsId":None, "name": extension_id}
+            result = fullScan.scan(path, meta)
+            return render_template("results.html", result=result)
     else:
-        return render_template("results.html")
+        extension_id= path.split('/')[-1]
+        extension_info = CWS_api.get_item(extension_id)
+        result, test = pie(path)
+        test2 = history(extension_id)
+        print('########################')
+        return render_template("results.html", result = exist, extension_info = extension_info)
 
 @app.route('/search', methods=['POST', 'GET'])
 def search():
@@ -124,6 +119,7 @@ def search():
     if request.method == 'POST':
         extension_name = request.form.get('search')
         if not extension_name:
+            flash('No input')
             return redirect('/')
         extension_ifo_list = CWS_api.get_item(extension_name)
         if extension_ifo_list == []:
@@ -137,6 +133,8 @@ def search():
 @app.route("/auto_complete", methods=["POST"])
 def auto_complete():
     output = request.get_json()
+    print(output)
+    print(CWS_api.autocomplete(output))
     suggest_list = CWS_api.autocomplete(output);
     return suggest_list
 
@@ -145,44 +143,26 @@ def analyze():
     """ Takes in the request Extension from the list that tha search() funktion returns and downloads it under crxuploads folder
     anzips the file and save it under uploads folder
     scans the file and the unzipd folder in virustotal and retireJS
-    returen: INTE KLAR ÄN
+    returen: loading.html
      """
     if request.method == 'POST':
-        # start_time = time.time()
         extension_name = request.form.get('extension_name')
-        name = extension_name.split('/')[-2]
-        # if not os.path.isfile(os.path.join(app.config['UPLOAD_CRX_FOLDER'], name+'.crx')):
         crx_downloader.download_crx(extension_name)
-        path = os.path.join(app.config['UPLOAD_CRX_FOLDER'], name+'.crx')
-        with ZipFile(path) as crx_unzip:
-        # Extracting all the members of the zip
-        # into a specific location.
-            crx_unzip.extractall(
-                path = os.path.join(app.config['UPLOAD_FOLDER'], name+'.crx'))
-            # path2 = os.path.join(app.config['UPLOAD_FOLDER'], name+'.crx')
-
-            # virustotal.virustotal(path)
-            # retireJS.retireJS(path2)
-        # else:
-            # path = os.path.join(app.config['UPLOAD_CRX_FOLDER'], name+'.crx')
-            # path2 = os.path.join(app.config['UPLOAD_FOLDER'], name+'.crx')
-            # virustotal.virustotal(path)
-            # retireJS.retireJS(path2)
-        # endtime = (time.time() - start_time)
-        # print(endtime)
         return render_template('loading.html')
 
 
-
-def pie():
-
-    result = mongoAPI.getByHash("0d1018ff158a9ac8e6654e4325edf5bc165a095cf2381d87ba018814ec618d13")
-
+def pie(filename):
+    # filename = input("Enter the input file name: ")
+    with open(filename,"rb") as f:
+        bytes = f.read() # read entire file as bytes
+        readable_hash = hashlib.sha256(bytes).hexdigest();
+    print(readable_hash)
+    result = mongoAPI.getByHash(readable_hash)
     labels = []
     sizes = []
     explode = []
-    vtResult = dict(result["document"]["virusTotal"])
-    vtTotal = result["document"]["virusTotalSum"]
+    vtResult = dict(result["virusTotal"])
+    vtTotal = result["virusTotalSum"]
 
     #Iterates through vt results and adds correct values labels, sizes, and explode
     for key in vtResult:
@@ -213,36 +193,36 @@ def pie():
     data = base64.b64encode(buf.getbuffer()).decode("ascii")
     # print(data)
     # test = 'data:image/png;base64,'+data+"'"
-    # return test
-    return f"data:image/png;base64,{data}"
+    # return test 
+    return result, f"data:image/png;base64,{data}"
 
-def history():
-
-    result = list(mongoAPI.getById("123")["documents"])
-
+def history(id):
+    
+    result = list(mongoAPI.getById(id))
+    
     dates = []
     risks = []
     for object in result:
         #adds just the date as time isn't that important and cuts the first two numbers of the year
-        dates.append(str(object["date"]).split()[0][2:])
+        dates.append(str(object['meta']["date"]).split()[0][2:])
         risks.append(int(object["risk"]))
-
+    
     #Sorts risks dependant on the order of dates
     #zip the lists to a touple list
     ziped = zip(dates,risks)
-    #Sort
+    #Sort 
     sort = sorted(ziped)
     temp = []
     #add risks to empty list in order of after they've been sorted by dates
     for i in sort:
-       temp.append(i[1])
+       temp.append(i[1]) 
     #overwrite risks with sorted version
     risks = temp
 
     #
     #sort dates
     dates.sort()
-
+    
     fig, ax = Figure.subplots()
     #define chart
 
