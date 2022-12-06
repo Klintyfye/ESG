@@ -12,6 +12,7 @@ inputBox.onkeyup = (e)=>{
 		contentType: "application/json",
 		data: JSON.stringify(s)
 	})
+	// Waits for the response from flask
 	.then(function (response){
 		rm_auto_com();
 		if (response.length){ // To remove any empty responses
@@ -22,6 +23,7 @@ inputBox.onkeyup = (e)=>{
 	})
 }
 
+// Removes the previously generated suggestions from the list.
 function rm_auto_com(){
 	while (suggBox.lastElementChild) {
 		suggBox.removeChild(suggBox.lastElementChild);

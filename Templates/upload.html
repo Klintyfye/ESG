@@ -74,7 +74,7 @@
                             <i>, {{ i[4] }} ratings</i>
                         </div>
                             <script>
-                                // Get percentage
+                                // Get percentage. This line might return 3 errors. These are just the IDE not understanding whats happening.
                                 starPercentage = ({{ i[5] }} / 5) * 100;
                                 // Round to nearest 10
                                 starPercentageRounded = `${Math.round(starPercentage / 10) * 10}%`;
