@@ -59,7 +59,7 @@ def compile_result(jsDir: str, vtDir: str, meta: dict) -> dict:
 
 
     #Add meta data to the dict of the json so we can use it as an identifier
-    meta["date"] = {str(datetime.now())}
+    meta["date"] = str(datetime.now())
     result["meta"] = meta
     result["hash"] = file["meta"]["file_info"]["sha256"]
 
