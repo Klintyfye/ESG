@@ -1,6 +1,4 @@
 function get_rating(rating) {
-	console.log(rating);
-
 	// Get percentage
 	const starPercentage = (rating / 5) * 100;
 

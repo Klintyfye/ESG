@@ -11,7 +11,7 @@ def compile_result(jsDir: str, vtDir: str, meta: dict) -> dict:
         meta (dict): dictionary of meta data including: cwsId (chrome web store id), extension name etc...
 
     Returns:
-        dict: dict of combined results of 
+        dict: dict of combined results of
     """
 
     result = {}
@@ -21,12 +21,12 @@ def compile_result(jsDir: str, vtDir: str, meta: dict) -> dict:
         file = json.load(f)
 
     file = file["data"]
-    
+
     #add RetireJS data to dict
     for object in file:
         for temp in object["results"]:
             temp.pop("detection", None)
-    
+
     #Keeps only relative path
     cwd = os.getcwd()
     for object in file:
@@ -35,15 +35,15 @@ def compile_result(jsDir: str, vtDir: str, meta: dict) -> dict:
     #Summarises retireJS vulnerabilities
     severities = {"none":0,"low":0,"medium":0,"high":0,"critical":0}
     result["retireJs"] = file
-    print(file[0]["results"])
+    # print(file[0]["results"])
     for temp in file:
         for object in temp["results"][0]["vulnerabilities"]:
             for severity in severities:
                 if object["severity"] == severity:
                     severities[severity] += 1
                     break
-    
-    
+
+
     result["retireSeverity"] = severities
 
     #read Virus Total data

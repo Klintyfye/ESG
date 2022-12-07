@@ -61,7 +61,7 @@ def upload_file():
     scans the file and the unzipd folder in virustotal and retireJS
     returen: INTE KLAR ÄN
     """
-    
+
     #Checks request method. If not post, don't do anything
     if request.method == 'POST':
         #Read file by filename from html
@@ -80,7 +80,7 @@ def upload_file():
             flash('Only crx files')
             return redirect('/')
 
-        #If everything was successful move on to loading.html 
+        #If everything was successful move on to loading.html
         flash('File successfully uploaded')
         return render_template('loading.html')
 
@@ -94,22 +94,22 @@ def results():
     with open(path,"rb") as f:
         bytes = f.read() # read entire file as bytes
         readable_hash = hashlib.sha256(bytes).hexdigest()
-    
+
     #Check if extension already exists in database
     exist = mongo_API.getByHash(readable_hash)
-    
+
     #if extension is NOT in database
     if exist == None:
         #Get extension id
         extension_id= path.split('/')[-1]
 
-        #Extension id NOT ending in "crx" signifies CWS 
+        #Extension id NOT ending in "crx" signifies CWS
         if extension_id.split('.')[-1] != 'crx':
             extension_info = CWS_API.get_item(extension_id)
 
             #Gathers metadata of extension
             meta = {"cwsId":extension_id, "name": extension_info[0][1]}
-            
+
             #Scans crx
             scan.scan(path, meta)
 
@@ -119,7 +119,7 @@ def results():
 
             #Renders result
             return render_template("results.html", extension_info = extension_info[0] ,result = result,test = test, test2 = history_img )
-        
+
         #Extension id ending in "crx" signifies local upload
         else:
             #Gathers metadata of extension
@@ -133,10 +133,10 @@ def results():
 
             #Renders result
             return render_template("results.html", result = result)
-    
+
     #if extension is already in database
     else:
-        
+
         #Get extension id
         extension_id= path.split('/')[-1]
         extension_info = CWS_API.get_item(extension_id)
@@ -145,25 +145,23 @@ def results():
         result, test = pie(path)
         history_img = history(extension_id)
 
-        print('########################')
-        
-        return render_template("results.html", result = exist, extension_info = extension_info,test = test, test2 = history_img)
+        return render_template("results.html", result = exist, extension_info = extension_info, test = test, test2 = history_img)
 
 @app.route('/search', methods=['POST', 'GET'])
 def search():
     """ Takes a search term and returns a list of search results to the Web UI"""
-    
+
     #Checks request method. If not post, don't do anything
     if request.method == 'POST':
         extension_name = request.form.get('search')
-        
+
         #Cancel if no extension name
         if not extension_name:
             flash('No input')
             return redirect('/')
-        
+
         extension_info_list = CWS_API.get_item(extension_name)
-        
+
         #If item extension does not exist cancel
         if extension_info_list == []:
             flash('No extensions found')
@@ -178,8 +176,6 @@ def search():
 @app.route("/auto_complete", methods = ["POST"])
 def auto_complete():
     output = request.get_json()
-    print(output)
-    print(CWS_API.autocomplete(output))
     suggest_list = CWS_API.autocomplete(output);
     return suggest_list
 
