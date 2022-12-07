@@ -118,7 +118,7 @@ def results():
             history_img = history(extension_id)
 
             #Renders result
-            return render_template("results.html", extension_info = extension_info[0] ,result = result,test = test, test2 = history_img )
+            return render_template("results.html", extension_info = extension_info ,result = result,test = test, test2 = history_img )
 
         #Extension id ending in "crx" signifies local upload
         else:
@@ -147,7 +147,7 @@ def results():
 
         print('########################')
 
-        return render_template("results.html", result = exist, extension_info = extension_info[0] ,test = test, test2 = history_img)
+        return render_template("results.html", result = exist, extension_info = extension_info ,test = test, test2 = history_img)
 
 @app.route('/search', methods=['POST', 'GET'])
 def search():
