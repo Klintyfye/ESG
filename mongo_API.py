@@ -6,7 +6,7 @@ from typing import Literal
 APIKEY = constants.APIKEY
 
 #Insert json
-def insertOne(object: dict) -> Literal[-1,1]:
+def insert_one(object: dict) -> Literal[-1,1]:
     """Insert json into database.
     Args:
         object (dict): json to be inserted loaded as a dict.
@@ -15,7 +15,7 @@ def insertOne(object: dict) -> Literal[-1,1]:
     """
         
     #Check if document with identical hash exists in db
-    if getByHash(object["hash"]) != None:
+    if get_by_hash(object["hash"]) != None:
         return -1
 
     url = "https://data.mongodb-api.com/app/data-jkbjv/endpoint/data/v1/action/insertOne"
@@ -37,7 +37,7 @@ def insertOne(object: dict) -> Literal[-1,1]:
     requests.request("POST", url, headers=headers, data=payload)
     return 1
 
-def getByHash(hash: str) -> dict|None:
+def get_by_hash(hash: str) -> dict|None:
     """Fetches single (first) json with matching hash value.
     (should only ever be one not accounting for errors.)
     Args:
@@ -68,7 +68,7 @@ def getByHash(hash: str) -> dict|None:
     response = requests.request("POST", url, headers=headers, data=payload)
     return json.loads(response.text)["document"]
 
-def getById(cwsId: str) -> list:
+def get_by_id(cwsId: str) -> list:
     """Fetches a dictionary with a list of json with matching cwsId.
     Args:
         cwsId (str): Chrome Web Store Id.
@@ -103,7 +103,7 @@ def getById(cwsId: str) -> list:
     return json.loads(response.text)["documents"]
 
 #Drop json by filter
-def deleteOne(hash: str) -> Literal[0,1]:
+def delete_one(hash: str) -> Literal[0,1]:
     """Drops json with hash value matching hash.
     Args:
         hash (str): hash value of crx.
@@ -151,19 +151,19 @@ if __name__ == '__main__':
                     "critical":5
                     }
 
-                print(insertOne(template))
+                print(insert_one(template))
             case "2":
                 hash = input("Insert hash: ")
                 print("Result:")
-                print(getByHash(hash))
+                print(get_by_hash(hash))
             case "3":
                 cwsId = input("Insert cwsId: ")
                 print("Result:")
-                print(getById(cwsId))
+                print(get_by_id(cwsId))
             case "4":
                 hash = input("Insert hash: ")
                 print("Result:")
-                print(deleteOne(hash))
+                print(delete_one(hash))
             case "q":
                 break
             case _:

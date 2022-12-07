@@ -83,7 +83,7 @@ def upload_file():
             readable_hash = hashlib.sha256(bytes).hexdigest()
 
             #Check if extension already exists in database
-            exist = mongo_API.getByHash(readable_hash)
+            exist = mongo_API.get_by_hash(readable_hash)
 
             #if extension is NOT in database
             if exist == None:
@@ -189,7 +189,7 @@ def analyze():
         readable_hash = hashlib.sha256(bytes).hexdigest()
 
     #Check if extension already exists in database
-        exist = mongo_API.getByHash(readable_hash)
+        exist = mongo_API.get_by_hash(readable_hash)
 
     #if extension is NOT in database
         if exist == None:
@@ -205,7 +205,7 @@ def pie(filename):
         readable_hash = hashlib.sha256(bytes).hexdigest();
 
     #print(readable_hash)
-    result = mongo_API.getByHash(readable_hash)
+    result = mongo_API.get_by_hash(readable_hash)
 
     labels = []
     sizes = []
@@ -231,6 +231,9 @@ def pie(filename):
     #define chart
 
     ##########HÄR SÄTTS LABELS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! labels = labels
+    #Skulle man kanske kunna lägga till labels som något typ av attribut till
+    #den nuvarande returnsatsen som ger bilden? Ser inte hur man kan skicka
+    #informationen till html, mid python funktion utan att avbryta med return.
     ax.pie(sizes, labels = labels, explode = explode, startangle=45,
     wedgeprops={'linewidth': 1.0, 'edgecolor': 'white'})
 
@@ -244,7 +247,7 @@ def pie(filename):
     return result, f"data:image/png;base64,{data}"
 
 def history(id):
-    result = list(mongo_API.getById(id))
+    result = list(mongo_API.get_by_id(id))
 
     dates = []
     risks = []

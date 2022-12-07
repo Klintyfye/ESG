@@ -43,7 +43,7 @@ def scan(crxDir: str, meta: dict) -> Literal[-1,1]:
     if object["meta"]["cwsId"] == "None":
         return 1
 
-    return mongo_API.insertOne(object)
+    return mongo_API.insert_one(object)
 
 
 if __name__ == '__main__':
