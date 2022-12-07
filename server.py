@@ -145,7 +145,9 @@ def results():
         result, test = pie(path)
         history_img = history(extension_id)
 
-        return render_template("results.html", result = exist, extension_info = extension_info, test = test, test2 = history_img)
+        print('########################')
+
+        return render_template("results.html", result = exist, extension_info = extension_info[0] ,test = test, test2 = history_img)
 
 @app.route('/search', methods=['POST', 'GET'])
 def search():
