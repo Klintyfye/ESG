@@ -7,13 +7,28 @@
     <link rel="icon" href="static/logo.png">
     <link rel="stylesheet" href="static/loading.css"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 </head>
-<body onpageshow="myFunction()">
-    <div class="loader"></div>
+{% if in_db %}
+    <form action="/in_db" method="post">
+        <div class="search-bar-form">
+            <i class="fa fa-search"></i>
+            <p>The extension is found in the database do you went to rescan enter Y else enter N.</p>
+            <input type="text" placeholder="Answer..." name="response">
+            <button type="submit">submit</button>
+        </div>
+    </form>
+<body>
+ {% endif %}
+ {% if not in_db %}
+<body  onpageshow="myFunction()">
+{% endif %}
+
+    <div class="loader" ></div>
     <br/> <br/>
     <div class="checkboxes">
         <form id = 'form' method="post" action="/results">
-            Scanning in virustotal <p id="timer1" ></p>
+            Scanning in virustotal <p id="timer1" "></p>
             <br/> <br/>
             Scanning in retireJS <p id="timer2" ></p>
             <br/> <br/>
@@ -24,7 +39,7 @@
             Currently in stage <p id="stage"></p>
 
             <script>
-
+    
             var task1timer = 0; 
             var task2timer = 0;
             var task3timer = 0;
@@ -99,14 +114,15 @@
             </script>
 
             <!-- <script src="loadingtimers.js"></script> -->
-
             <script>
-            function myFunction(){
+                    
+                function myFunction(){
                 // const x = document.getElementById('form').value()
                 // x.submit()
-                document.getElementById('form').submit();
-            }
+                    document.getElementById('form').submit();
+                }
             </script>
+          
         </form>
     </div>
 </html>

@@ -61,7 +61,7 @@ def upload_file():
     scans the file and the unzipd folder in virustotal and retireJS
     returen: INTE KLAR ÄN
     """
-    
+
     #Checks request method. If not post, don't do anything
     if request.method == 'POST':
         #Read file by filename from html
@@ -75,15 +75,28 @@ def upload_file():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_CRX_FOLDER'], filename))
+            path = os.path.join(app.config['UPLOAD_CRX_FOLDER'], filename)
+            print(path)
+            #Get hash of crx
+            with open(path,"rb") as f:
+                bytes = f.read() # read entire file as bytes
+            readable_hash = hashlib.sha256(bytes).hexdigest()
+
+            #Check if extension already exists in database
+            exist = mongo_API.getByHash(readable_hash)
+
+            #if extension is NOT in database
+            if exist == None:
+                return render_template('loading.html')
+            else: 
+            #if extension is in database
+                return render_template('loading.html', in_db = 'yes') 
         #If file is not of allowed type, flash error and cancel
         else:
             flash('Only crx files')
             return redirect('/')
 
-        #If everything was successful move on to loading.html 
-        flash('File successfully uploaded')
-        return render_template('loading.html')
-
+        
 
 @app.route('/results', methods=['POST', 'GET'])
 def results():
@@ -91,79 +104,55 @@ def results():
     path = max(glob.iglob(app.config['UPLOAD_CRX_FOLDER']+'/*'),key=os.path.getctime)
     """path to crx"""
     #Get hash of crx
-    with open(path,"rb") as f:
-        bytes = f.read() # read entire file as bytes
-        readable_hash = hashlib.sha256(bytes).hexdigest()
-    
-    #Check if extension already exists in database
-    exist = mongo_API.getByHash(readable_hash)
-    
-    #if extension is NOT in database
-    if exist == None:
         #Get extension id
-        extension_id= path.split('/')[-1]
-
-        #Extension id NOT ending in "crx" signifies CWS 
-        if extension_id.split('.')[-1] != 'crx':
-            extension_info = CWS_API.get_item(extension_id)
-
-            #Gathers metadata of extension
-            meta = {"cwsId":extension_id, "name": extension_info[0][1]}
-            
-            #Scans crx
-            scan.scan(path, meta)
-
-            #Creates charts of file and history
-            result, test = pie(path)
-            history_img = history(extension_id)
-
-            #Renders result
-            return render_template("results.html", extension_info = extension_info[0] ,result = result,test = test, test2 = history_img )
-        
-        #Extension id ending in "crx" signifies local upload
-        else:
-            #Gathers metadata of extension
-            meta = {"cwsId":"None", "name": extension_id}
-
-            #Scans crx
-            result = scan.scan(path, meta)
-
-            #Creates pie chart
-            result, test = pie(path)
-
-            #Renders result
-            return render_template("results.html", result = result)
-    
-    #if extension is already in database
-    else:
-        
-        #Get extension id
-        extension_id= path.split('/')[-1]
+    extension_id= path.split('/')[-1]
+    #Extension id NOT ending in "crx" signifies CWS
+    if extension_id.split('.')[-1] != 'crx':
         extension_info = CWS_API.get_item(extension_id)
+
+        #Gathers metadata of extension
+        meta = {"cwsId":extension_id, "name": extension_info[0][1]}
+
+        #Scans crx
+        scan.scan(path, meta)
 
         #Creates charts of file and history
         result, test = pie(path)
         history_img = history(extension_id)
 
-        print('########################')
-        
-        return render_template("results.html", result = exist, extension_info = extension_info[0] ,test = test, test2 = history_img)
+        #Renders result
+        return render_template("results.html", extension_info = extension_info ,result = result,test = test, test2 = history_img )
+
+    #Extension id ending in "crx" signifies local upload
+    else:
+        #Gathers metadata of extension
+        meta = {"cwsId":"None", "name": extension_id}
+
+        #Scans crx
+        result = scan.scan(path, meta)
+
+        #Creates pie chart
+        result, test = pie(path)
+
+        #Renders result
+        return render_template("results.html", result = result, test = test)
+
 
 @app.route('/search', methods=['POST', 'GET'])
 def search():
     """ Takes a search term and returns a list of search results to the Web UI"""
-    
+
     #Checks request method. If not post, don't do anything
     if request.method == 'POST':
         extension_name = request.form.get('search')
-        
+
         #Cancel if no extension name
         if not extension_name:
             flash('No input')
             return redirect('/')
-        
+
         extension_info_list = CWS_API.get_item(extension_name)
-        
+
         #If item extension does not exist cancel
         if extension_info_list == []:
             flash('No extensions found')
@@ -178,8 +167,6 @@ def search():
 @app.route("/auto_complete", methods = ["POST"])
 def auto_complete():
     output = request.get_json()
-    print(output)
-    print(CWS_API.autocomplete(output))
     suggest_list = CWS_API.autocomplete(output);
     return suggest_list
 
@@ -193,7 +180,22 @@ def analyze():
     if request.method == 'POST':
         extension_name = request.form.get('extension_name')
         crx_downloader.download_crx(extension_name)
-        return render_template('loading.html')
+        """path to crx"""
+        path = os.path.join(app.config['UPLOAD_CRX_FOLDER'], extension_name.split('/')[-1])
+        print(path)
+        #Get hash of crx
+        with open(path,"rb") as f:
+            bytes = f.read() # read entire file as bytes
+        readable_hash = hashlib.sha256(bytes).hexdigest()
+
+    #Check if extension already exists in database
+        exist = mongo_API.getByHash(readable_hash)
+
+    #if extension is NOT in database
+        if exist == None:
+            return render_template('loading.html')
+        else: 
+            return render_template('loading.html', in_db = 'yes') 
 
 
 def pie(filename):
@@ -298,6 +300,70 @@ def history(id):
     data = base64.b64encode(buf.getbuffer()).decode("ascii")
 
     return f"data:image/png;base64,{data}"
+
+@app.route('/in_db', methods=['POST', 'GET'])
+def in_db():
+    if request.method == 'POST':
+        response = request.form.get('response')
+    else:
+        return render_template('loading.html', in_db = 'yes') 
+    path = max(glob.iglob(app.config['UPLOAD_CRX_FOLDER']+'/*'),key=os.path.getctime)
+    extension_id= path.split('/')[-1]
+    if response.upper() == 'Y':
+        #Extension id NOT ending in "crx" signifies CWS
+        if extension_id.split('.')[-1] != 'crx':
+            extension_info = CWS_API.get_item(extension_id)
+
+            #Gathers metadata of extension
+            meta = {"cwsId":extension_id, "name": extension_info[0][1]}
+
+            #Scans crx
+            scan.scan(path, meta)
+
+            #Creates charts of file and history
+            result, test = pie(path)
+            history_img = history(extension_id)
+
+            #Renders result
+            return render_template("results.html", extension_info = extension_info ,result = result,test = test, test2 = history_img )
+
+        #Extension id ending in "crx" signifies local upload
+        else:
+            #Gathers metadata of extension
+            meta = {"cwsId":"None", "name": extension_id}
+
+            #Scans crx
+            result = scan.scan(path, meta)
+            #Creates pie chart
+            result, test = pie(path)
+
+            #Renders result
+            return render_template("results.html", result = result, test = test)
+    else:
+        #Extension id NOT ending in "crx" signifies CWS
+        if extension_id.split('.')[-1] != 'crx':
+            extension_id= path.split('/')[-1]
+            extension_info = CWS_API.get_item(extension_id)
+
+            #Creates charts of file and history
+            result, test = pie(path)
+            history_img = history(extension_id)
+
+            print('########################')   
+
+            return render_template("results.html", result = result, extension_info = extension_info ,test = test, test2 = history_img)
+        #Extension id ending in "crx" signifies local upload
+        else:
+            #Gathers metadata of extension
+            meta = {"cwsId":"None", "name": extension_id}
+
+            #Scans crx
+            result = scan.scan(path, meta)
+            #Creates pie chart
+            result, test = pie(path)
+
+            #Renders result
+            return render_template("results.html", result = result, test = test)
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1',port=5000,debug=True,threaded=True)
