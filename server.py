@@ -229,6 +229,8 @@ def pie(filename):
 
     fig, ax = Figure.subplots()
     #define chart
+
+    ##########HÄR SÄTTS LABELS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! labels = labels
     ax.pie(sizes, labels = labels, explode = explode, startangle=45,
     wedgeprops={'linewidth': 1.0, 'edgecolor': 'white'})
 
@@ -284,14 +286,14 @@ def history(id):
         critical.append(x["critical"])
 
     #Plot every function for the risks after dates.
-    ax.plot(dates, none, label="none")
-    ax.plot(dates, low, label="low")
-    ax.plot(dates, medium, label="medium")
-    ax.plot(dates, high, label="high")
-    ax.plot(dates, critical, label="critical")
-
+    ax.plot(dates, none)
+    ax.plot(dates, low)
+    ax.plot(dates, medium)
+    ax.plot(dates, high)
+    ax.plot(dates, critical)
+    ax.legend(["none","low","medium","high","critical"])
     ax.set_xlabel("Time")
-    ax.set_ylabel("Risk")
+    ax.set_ylabel("Risks")
     # Save it to a temporary buffer.
     buf = BytesIO()
     Figure.savefig(buf, format="png")

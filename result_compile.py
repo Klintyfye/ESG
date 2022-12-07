@@ -35,14 +35,12 @@ def compile_result(jsDir: str, vtDir: str, meta: dict) -> dict:
     #Summarises retireJS vulnerabilities
     severities = {"none":0,"low":0,"medium":0,"high":0,"critical":0}
     result["retireJs"] = file
-    # print(file[0]["results"])
     for temp in file:
         for object in temp["results"][0]["vulnerabilities"]:
             for severity in severities:
                 if object["severity"] == severity:
                     severities[severity] += 1
                     break
-
 
     result["retireSeverity"] = severities
 
