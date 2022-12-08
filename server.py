@@ -10,6 +10,8 @@ import crx_downloader
 import glob
 import base64
 from io import BytesIO
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as Figure
 import mongo_API
 import hashlib
