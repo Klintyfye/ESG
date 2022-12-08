@@ -31,6 +31,8 @@ body {
 	padding-block: 1rem;
 	width: 100%;
 	margin: 0;
+	min-width: 300px;
+
 
 	border-radius: 10px;
 	box-shadow: 0px 1px 5px rgb(143, 143, 143);
@@ -73,14 +75,35 @@ body {
 /* DESCRIPTION BOX END */
 
 /* VT BOX START */
+#vt_text {
 
+}
+
+#vt_img {
+	width: 100%;
+}
 /* VT BOX END */
 
 /* RETIREJS BOX START */
 #vis_toggle {
 	display: none;
 }
+
+#res_box {
+	max-height: 700px;
+	overflow-y: auto;
+}
 /* RETIREJS BOX END */
+
+/* HISTORY START */
+#history_text {
+
+}
+
+#history_img {
+	width: 100%;
+}
+/* HISTORY END */
 
 /* RATING START */
 .stars-outer {
