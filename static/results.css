@@ -28,15 +28,20 @@ body {
 	grid-template-columns: repeat(4, 1fr);
 }
 .box {
+	position: relative;
 	padding-block: 1rem;
 	width: 100%;
 	margin: 0;
-	min-width: 300px;
-
-
+	min-width: 342px;
 	border-radius: 10px;
 	box-shadow: 0px 1px 5px rgb(143, 143, 143);
 	background-color: #ffffff;
+}
+.small_box {
+	max-height: 350px;
+}
+.medium_box {
+	max-height: 450px;
 }
 
 .box_spacing {
@@ -47,6 +52,12 @@ body {
 /* MAIN BODY END */
 
 /* DESCRIPTION BOX START */
+.title {
+	font-size: large;
+	font-weight: bold;
+	padding-bottom: 5px;
+}
+
 #desc_box {
 
 }
@@ -72,15 +83,32 @@ body {
 #ext_rating {
 
 }
+
+#adv_view {
+	position:absolute;
+	left: 10px;
+	bottom: 10px;
+	padding: 7px 10px;
+	cursor: pointer;
+	background-color: #00a54a; /* Green */
+	border: none;
+	color: white;
+	text-align: center;
+	text-decoration: none;
+	font-size: 16px;
+	border-radius: 10px;
+	box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.199);
+}
+
+#adv_view:hover {
+	background-color: #00893e;
+}
 /* DESCRIPTION BOX END */
 
 /* VT BOX START */
-#vt_text {
-
-}
-
 #vt_img {
 	width: 100%;
+	max-width: 308px;
 }
 /* VT BOX END */
 
@@ -90,76 +118,74 @@ body {
 }
 
 #res_box {
-	max-height: 700px;
+	max-height: 850px;
 	overflow-y: auto;
 }
 /* RETIREJS BOX END */
 
 /* HISTORY START */
-#history_text {
-
-}
-
 #history_img {
 	width: 100%;
+	max-width: 430px;
+	max-height: 430px;
 }
 /* HISTORY END */
 
 /* RATING START */
 .stars-outer {
-  position: relative;
-  display: inline-block;
+	position: relative;
+	display: inline-block;
 }
 
 .stars-inner {
-  position: absolute;
-  top: 0;
-  left: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  width: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
+	white-space: nowrap;
+	overflow: hidden;
+	width: 0;
 }
 
 .stars-outer::before {
-  content: "\f005 \f005 \f005 \f005 \f005";
-  font-family: "Font Awesome 5 Free";
-  font-weight: 900;
-  color: #ccc;
+	content: "\f005 \f005 \f005 \f005 \f005";
+	font-family: "Font Awesome 5 Free";
+	font-weight: 900;
+	color: #ccc;
 }
 
 .stars-inner::before {
-  content: "\f005 \f005 \f005 \f005 \f005";
-  font-family: "Font Awesome 5 Free";
-  font-weight: 900;
-  color: #f8ce0b;
+	content: "\f005 \f005 \f005 \f005 \f005";
+	font-family: "Font Awesome 5 Free";
+	font-weight: 900;
+	color: #f8ce0b;
 }
 /* RATING END */
 
 /* LOGO START */
 #logga {
-  margin: auto;
-	 width: 180px;
+  	margin: auto;
+	width: 180px;
 }
 
 #logo {
-  padding: 0;
-  position: relative;
-  font-size: 40px;
-  font-family: 'helvetica', sans-serif;
-  float: right;
+	padding: 0;
+	position: relative;
+	font-size: 40px;
+	font-family: 'helvetica', sans-serif;
+	float: right;
 }
 
 #logo a {
-  color: #464646;
-  text-decoration: none;
+	color: #464646;
+	text-decoration: none;
 }
 
 #logga #logoimg {
-  position: relative;
-  top: 7px;
-  width: 90px;
-  border-radius: 50%;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.418);
+	position: relative;
+	top: 7px;
+	width: 90px;
+	border-radius: 50%;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.418);
 }
 /* LOGO END */
 
@@ -212,17 +238,44 @@ nav ul {
 
 /* FOOTER START */
 footer {
-  position: fixed;
-  font-family:Arial, Helvetica, sans-serif;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  background-color: var(--primary-footer-color);
-  text-align: center;
-  box-shadow: 0 -5px 8px 0 var(--primary-footer-box-color);
+	position: fixed;
+	font-family:Arial, Helvetica, sans-serif;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	background-color: var(--primary-footer-color);
+	text-align: center;
+	box-shadow: 0 -5px 8px 0 var(--primary-footer-box-color);
 
-  /* Variables */
-  --primary-footer-color: #c5c5c5;
-  --primary-footer-box-color: #c2c2c2;
+	/* Variables */
+	--primary-footer-color: #c5c5c5;
+	--primary-footer-box-color: #c2c2c2;
 }
 /* FOOTER END */
+
+@media (max-width: 1104px) and (min-width:748px) {
+	.main_box {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (max-width: 747px) {
+	.main_box {
+		grid-template-columns: repeat(1, 1fr);
+	}
+	.grid_col_span_2 {
+		grid-column: span 1;
+	}
+	#adv_view {
+		position:unset;
+		float: right;
+	}
+}
+
+/*
+	Format JSON
+	Advanced button text change
+	retirejs max size thing
+	Does all the pie graphs nave the same size?
+	loading page css
+*/

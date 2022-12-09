@@ -90,15 +90,15 @@ def upload_file():
             #if extension is NOT in database
             if exist == None:
                 return render_template('loading.html')
-            else: 
+            else:
             #if extension is in database
-                return render_template('loading.html', in_db = 'yes') 
+                return render_template('loading.html', in_db = 'yes')
         #If file is not of allowed type, flash error and cancel
         else:
             flash('Only crx files')
             return redirect('/')
 
-        
+
 
 @app.route('/results', methods=['POST', 'GET'])
 def results():
@@ -119,11 +119,11 @@ def results():
         scan.scan(path, meta)
 
         #Creates charts of file and history
-        result, test = pie(path)
+        result, test, labels = pie(path)
         history_img = history(extension_id)
 
         #Renders result
-        return render_template("results.html", extension_info = extension_info ,result = result,test = test, test2 = history_img )
+        return render_template("results.html", extension_info = extension_info ,result = result,test = test, test2 = history_img, labels = labels)
 
     #Extension id ending in "crx" signifies local upload
     else:
@@ -134,10 +134,10 @@ def results():
         result = scan.scan(path, meta)
 
         #Creates pie chart
-        result, test = pie(path)
+        result, test , labels = pie(path)
 
         #Renders result
-        return render_template("results.html", result = result, test = test)
+        return render_template("results.html", result = result, test = test, labels = labels)
 
 
 @app.route('/search', methods=['POST', 'GET'])
@@ -196,8 +196,8 @@ def analyze():
     #if extension is NOT in database
         if exist == None:
             return render_template('loading.html')
-        else: 
-            return render_template('loading.html', in_db = 'yes') 
+        else:
+            return render_template('loading.html', in_db = 'yes')
 
 
 def pie(filename):
@@ -221,7 +221,7 @@ def pie(filename):
         if vt_result[key] > 0:
             val = vt_result[key]
             #Sets useful label: type \n (percent, nr)
-            labels.append(f"{key}\n({round(val/vt_total*100,1)}%, {val})")
+            labels.append(f"{key}: {round(val/vt_total*100,1)}%, ({val} engines )")
             sizes.append(vt_result[key])
             #highlight slices if they are malicious or supicious
             if key in ["malicious", "suspicious"]:
@@ -236,17 +236,18 @@ def pie(filename):
     #Skulle man kanske kunna lägga till labels som något typ av attribut till
     #den nuvarande returnsatsen som ger bilden? Ser inte hur man kan skicka
     #informationen till html, mid python funktion utan att avbryta med return.
-    ax.pie(sizes, labels = labels, explode = explode, startangle=45,
+    ax.pie(sizes, explode = explode, startangle=45,
     wedgeprops={'linewidth': 1.0, 'edgecolor': 'white'})
 
     ax.axis('equal')
+    ax.set_aspect(1.0/ax.get_data_ratio(), adjustable='box')
     # Save it to a temporary buffer.
     buf = BytesIO()
-    Figure.savefig(buf, format="png")
+    Figure.savefig(buf, format="png", bbox_inches="tight", transparent=True)
 
     # Embed the result in the html output.
     data = base64.b64encode(buf.getbuffer()).decode("ascii")
-    return result, f"data:image/png;base64,{data}"
+    return result, f"data:image/png;base64,{data}", labels
 
 def history(id):
     result = list(mongo_API.get_by_id(id))
@@ -299,9 +300,10 @@ def history(id):
     ax.legend(["none","low","medium","high","critical"])
     ax.set_xlabel("Time")
     ax.set_ylabel("Risks")
+    ax.set_aspect(1.0/ax.get_data_ratio(), adjustable='box')
     # Save it to a temporary buffer.
     buf = BytesIO()
-    Figure.savefig(buf, format="png")
+    Figure.savefig(buf, format="png", bbox_inches="tight", transparent=True)
 
     # Embed the result in the html output.
     data = base64.b64encode(buf.getbuffer()).decode("ascii")
@@ -313,7 +315,7 @@ def in_db():
     if request.method == 'POST':
         response = request.form.get('response')
     else:
-        return render_template('loading.html', in_db = 'yes') 
+        return render_template('loading.html', in_db = 'yes')
     path = max(glob.iglob(app.config['UPLOAD_CRX_FOLDER']+'/*'),key=os.path.getctime)
     extension_id= path.split('/')[-1]
     if response.upper() == 'Y':
@@ -328,11 +330,11 @@ def in_db():
             scan.scan(path, meta)
 
             #Creates charts of file and history
-            result, test = pie(path)
+            result, test, labels = pie(path)
             history_img = history(extension_id)
 
             #Renders result
-            return render_template("results.html", extension_info = extension_info ,result = result,test = test, test2 = history_img )
+            return render_template("results.html", extension_info = extension_info ,result = result,test = test, test2 = history_img, labels = labels)
 
         #Extension id ending in "crx" signifies local upload
         else:
@@ -342,10 +344,10 @@ def in_db():
             #Scans crx
             result = scan.scan(path, meta)
             #Creates pie chart
-            result, test = pie(path)
+            result, test, labels = pie(path)
 
             #Renders result
-            return render_template("results.html", result = result, test = test)
+            return render_template("results.html", result = result, test = test, labels = labels)
     else:
         #Extension id NOT ending in "crx" signifies CWS
         if extension_id.split('.')[-1] != 'crx':
@@ -353,12 +355,12 @@ def in_db():
             extension_info = CWS_API.get_item(extension_id)
 
             #Creates charts of file and history
-            result, test = pie(path)
+            result, test, labels = pie(path)
             history_img = history(extension_id)
 
-            print('########################')   
+            print('########################')
 
-            return render_template("results.html", result = result, extension_info = extension_info ,test = test, test2 = history_img)
+            return render_template("results.html", result = result, extension_info = extension_info ,test = test, test2 = history_img, labels = labels)
         #Extension id ending in "crx" signifies local upload
         else:
             #Gathers metadata of extension
@@ -367,10 +369,10 @@ def in_db():
             #Scans crx
             result = scan.scan(path, meta)
             #Creates pie chart
-            result, test = pie(path)
+            result, test, labels = pie(path)
 
             #Renders result
-            return render_template("results.html", result = result, test = test)
+            return render_template("results.html", result = result, test = test, labels = labels)
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1',port=5000,debug=True,threaded=True)
