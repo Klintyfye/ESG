@@ -106,9 +106,15 @@ body {
 /* DESCRIPTION BOX END */
 
 /* VT BOX START */
+#label_box {
+	list-style: none;
+	display: inline-block;
+}
+
 #vt_img {
 	width: 100%;
-	max-width: 308px;
+	max-width: 290px;
+
 }
 /* VT BOX END */
 
@@ -274,8 +280,7 @@ footer {
 
 /*
 	Format JSON
-	Advanced button text change
 	retirejs max size thing
-	Does all the pie graphs nave the same size?
 	loading page css
+	dropdown history
 */

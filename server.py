@@ -119,11 +119,11 @@ def results():
         scan.scan(path, meta)
 
         #Creates charts of file and history
-        result, test, labels = pie(path)
+        result, test, labels, colors = pie(path)
         history_img = history(extension_id)
 
         #Renders result
-        return render_template("results.html", extension_info = extension_info ,result = result,test = test, test2 = history_img, labels = labels)
+        return render_template("results.html", extension_info = extension_info ,result = result,test = test, test2 = history_img, lables_colors=zip(labels, colors))
 
     #Extension id ending in "crx" signifies local upload
     else:
@@ -134,10 +134,10 @@ def results():
         result = scan.scan(path, meta)
 
         #Creates pie chart
-        result, test , labels = pie(path)
+        result, test , labels, colors = pie(path)
 
         #Renders result
-        return render_template("results.html", result = result, test = test, labels = labels)
+        return render_template("results.html", result = result, test = test, lables_colors=zip(labels, colors))
 
 
 @app.route('/search', methods=['POST', 'GET'])
@@ -217,27 +217,27 @@ def pie(filename):
 
     #Iterates through vt results and adds correct values labels, sizes, and explode
     for key in vt_result:
-        #If no engines flagged don't include in pie chart
-        if vt_result[key] > 0:
-            val = vt_result[key]
-            #Sets useful label: type \n (percent, nr)
-            labels.append(f"{key}: {round(val/vt_total*100,1)}%, ({val} engines )")
-            sizes.append(vt_result[key])
-            #highlight slices if they are malicious or supicious
-            if key in ["malicious", "suspicious"]:
-                explode.append(0.1)
-            else:
-                explode.append(0)
+        val = vt_result[key]
+        #Sets useful label: type \n (percent, nr)
+        labels.append(f"{key}: {round(val/vt_total*100,1)}%, ({val} engines )")
+        sizes.append(vt_result[key])
+        #highlight slices if they are malicious or supicious
+        if key in ["malicious", "suspicious"]:
+            explode.append(0.1)
+        else:
+            explode.append(0)
 
     fig, ax = Figure.subplots()
     #define chart
+
+    colors = ['#66b032', '#fb9902', '#fefe33', '#347c98', '#0247fe', '#8601af', '#fe2712', '#b2d732']
 
     ##########HÄR SÄTTS LABELS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! labels = labels
     #Skulle man kanske kunna lägga till labels som något typ av attribut till
     #den nuvarande returnsatsen som ger bilden? Ser inte hur man kan skicka
     #informationen till html, mid python funktion utan att avbryta med return.
     ax.pie(sizes, explode = explode, startangle=45,
-    wedgeprops={'linewidth': 1.0, 'edgecolor': 'white'})
+    wedgeprops={'linewidth': 1.0, 'edgecolor': 'white'}, colors = colors)
 
     ax.axis('equal')
     ax.set_aspect(1.0/ax.get_data_ratio(), adjustable='box')
@@ -247,7 +247,7 @@ def pie(filename):
 
     # Embed the result in the html output.
     data = base64.b64encode(buf.getbuffer()).decode("ascii")
-    return result, f"data:image/png;base64,{data}", labels
+    return result, f"data:image/png;base64,{data}", labels, colors
 
 def history(id):
     result = list(mongo_API.get_by_id(id))
@@ -330,11 +330,11 @@ def in_db():
             scan.scan(path, meta)
 
             #Creates charts of file and history
-            result, test, labels = pie(path)
+            result, test, labels, colors = pie(path)
             history_img = history(extension_id)
 
             #Renders result
-            return render_template("results.html", extension_info = extension_info ,result = result,test = test, test2 = history_img, labels = labels)
+            return render_template("results.html", extension_info = extension_info ,result = result,test = test, test2 = history_img, lables_colors=zip(labels, colors))
 
         #Extension id ending in "crx" signifies local upload
         else:
@@ -344,10 +344,10 @@ def in_db():
             #Scans crx
             result = scan.scan(path, meta)
             #Creates pie chart
-            result, test, labels = pie(path)
+            result, test, labels, colors = pie(path)
 
             #Renders result
-            return render_template("results.html", result = result, test = test, labels = labels)
+            return render_template("results.html", result = result, test = test, lables_colors=zip(labels, colors))
     else:
         #Extension id NOT ending in "crx" signifies CWS
         if extension_id.split('.')[-1] != 'crx':
@@ -355,12 +355,12 @@ def in_db():
             extension_info = CWS_API.get_item(extension_id)
 
             #Creates charts of file and history
-            result, test, labels = pie(path)
+            result, test, labels, colors = pie(path)
             history_img = history(extension_id)
 
             print('########################')
 
-            return render_template("results.html", result = result, extension_info = extension_info ,test = test, test2 = history_img, labels = labels)
+            return render_template("results.html", result = result, extension_info = extension_info ,test = test, test2 = history_img, lables_colors=zip(labels, colors))
         #Extension id ending in "crx" signifies local upload
         else:
             #Gathers metadata of extension
@@ -369,10 +369,10 @@ def in_db():
             #Scans crx
             result = scan.scan(path, meta)
             #Creates pie chart
-            result, test, labels = pie(path)
+            result, test, labels, colors = pie(path)
 
             #Renders result
-            return render_template("results.html", result = result, test = test, labels = labels)
+            return render_template("results.html", result = result, test = test, lables_colors=zip(labels, colors))
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1',port=5000,debug=True,threaded=True)

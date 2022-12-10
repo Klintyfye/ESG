@@ -24,7 +24,7 @@
         </div>
     </nav>
     <div class="main_box">
-        <div class="box small_box">
+        <div class="box medium_box">
             <div class="box_spacing">
                 {% if extension_info %}
                 {% for i in extension_info %}
@@ -58,14 +58,16 @@
                 {% endif %}
             </div>
         </div>
-        <div class="box small_box">
+        <div class="box medium_box">
             <div class="box_spacing">
                 <div class="title">Vulnerabilitie Scan</div>
-                {% if labels %}
-                {% for i in labels %}
-                <div>{{ i }}</div>
-                {% endfor %}
-                {% endif %}
+                <div id="label_box">
+                    {% if lables_colors %}
+                    {% for labels, colors in lables_colors %}
+                    <li><i class='fas fa-square' style="color: {{ colors }} ;"></i> {{ labels }}</li>
+                    {% endfor %}
+                    {% endif %}
+                </div>
                 <img id="vt_img" src = {{ test }}> </img>
             </div>
         </div>
