@@ -17,7 +17,9 @@ inputBox.onkeyup = (e)=>{
 		rm_auto_com();
 		if (response.length){ // To remove any empty responses
 			for (let i = 0; i < 4; i++){
-				document.getElementById("list_box").innerHTML += "<li onclick='select(this)'>" + response[i] + "</li>";
+				if (response[i]) {
+					document.getElementById("list_box").innerHTML += "<li onclick='select(this)'>" + response[i] + "</li>";
+				}
 			}
 		}
 	})

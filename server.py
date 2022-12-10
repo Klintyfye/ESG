@@ -15,6 +15,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as Figure
 import mongo_API
 import hashlib
+import json
 
 #????????????????????????
 app=Flask(__name__, template_folder='Templates/')
@@ -125,8 +126,10 @@ def results():
         previous_extensions=mongo_API.get_by_id(extension_id)
         for extension in previous_extensions:
             previous_hash.append(extension["hash"])
+        # Parse result
+        file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list = adv_view_data(str(result))
         #Renders result
-        return render_template("results.html", previous_hash=previous_hash, extension_info = extension_info ,result = result,test = test, test2 = history_img, lables_colors=zip(labels, colors))
+        return render_template("results.html", previous_hash=previous_hash, extension_info = extension_info , result=zip(file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list), test = test, test2 = history_img, lables_colors=zip(labels, colors))
 
     #Extension id ending in "crx" signifies local upload
     else:
@@ -138,9 +141,10 @@ def results():
 
         #Creates pie chart
         result, test , labels, colors = pie(path)
-
+        # Parse result
+        file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list = adv_view_data(str(result))
         #Renders result
-        return render_template("results.html", result = result, test = test, lables_colors=zip(labels, colors))
+        return render_template("results.html", result=zip(file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list), test = test, lables_colors=zip(labels, colors))
 
 
 @app.route('/search', methods=['POST', 'GET'])
@@ -295,15 +299,16 @@ def history(id):
         critical.append(x["critical"])
 
     #Plot every function for the risks after dates.
-    ax.plot(dates, none)
-    ax.plot(dates, low)
-    ax.plot(dates, medium)
-    ax.plot(dates, high)
-    ax.plot(dates, critical)
+    ax.plot(dates, none, '#a5a5a5')
+    ax.plot(dates, low, '#3b85c2')
+    ax.plot(dates, medium, '#f18740')
+    ax.plot(dates, high, '#ca1f1f')
+    ax.plot(dates, critical, '#812094')
     ax.legend(["none","low","medium","high","critical"])
     ax.set_xlabel("Time")
     ax.set_ylabel("Risks")
     ax.set_aspect(1.0/ax.get_data_ratio(), adjustable='box')
+    ax.plot('r')
     # Save it to a temporary buffer.
     buf = BytesIO()
     Figure.savefig(buf, format="png", bbox_inches="tight", transparent=True)
@@ -312,6 +317,29 @@ def history(id):
     data = base64.b64encode(buf.getbuffer()).decode("ascii")
 
     return f"data:image/png;base64,{data}"
+
+def adv_view_data(result):
+    result = result.replace("'", '"')
+
+    alist = json.loads(result)
+
+    file_path_list = []
+    vul_name_list = []
+    info_list = []
+    severity_list = []
+    summary_list = []
+    CVE_list = []
+
+    for i in range(len(alist["retireJs"])):
+        for j in range(len(alist["retireJs"][i]["results"][0]["vulnerabilities"])):
+            file_path_list.append(alist["retireJs"][i]["file"])
+            vul_name_list.append(alist["retireJs"][i]["results"][0]["component"] + " " + alist["retireJs"][i]["results"][0]["version"])
+            info_list.append(alist["retireJs"][i]["results"][0]["vulnerabilities"][j]["info"])
+            severity_list.append(alist["retireJs"][i]["results"][0]["vulnerabilities"][j]["severity"])
+            summary_list.append(alist["retireJs"][i]["results"][0]["vulnerabilities"][j]["identifiers"]["summary"])
+            CVE_list.append(alist["retireJs"][i]["results"][0]["vulnerabilities"][j]["identifiers"]["CVE"][0])
+
+    return file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list
 
 @app.route('/in_db', methods=['POST', 'GET'])
 def in_db():
@@ -336,7 +364,9 @@ def in_db():
             previous_extensions=mongo_API.get_by_id(extension_id)
             for extension in previous_extensions:
                 previous_hash.append(extension["hash"])
-            return render_template("results.html",previous_hash=previous_hash, result = result, extension_info = extension_info ,test = test, test2 = history_img, lables_colors=zip(labels, colors))
+            # Parse result
+            file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list = adv_view_data(str(result))
+            return render_template("results.html",previous_hash=previous_hash, result=zip(file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list), extension_info = extension_info ,test = test, test2 = history_img, lables_colors=zip(labels, colors))
         #Extension id ending in "crx" signifies local upload
         else:
             #Gathers metadata of extension
@@ -344,8 +374,11 @@ def in_db():
             #Scans crx
             #Creates pie chart
             result, test, labels, colors = pie(path)
+            # Parse result
+            file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list = adv_view_data(str(result))
             #Renders result
-            return render_template("results.html", result = result, test = test, lables_colors=zip(labels, colors))
+            return render_template("results.html", result=zip(file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list), test = test, lables_colors=zip(labels, colors))
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1',port=5000,debug=True,threaded=True)
+

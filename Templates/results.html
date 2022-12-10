@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <title>ESG - Results</title>
-    <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="static/logo.png">
@@ -32,9 +31,9 @@
                 <div id="desc_box">
                     <div class="title">Extension Information</div>
                     <image id="ext_img" src={{ i[2] }}></image>
-                    <div id="ext_name">Name: {{ i[1] }}</div>
-                    <div id="ext_id">ID: <i>{{ i[6] }}</i></div>
-                    <div id="ext_desc">Description: {{ i[3] }}</div>
+                    <div><b>Name: </b>{{ i[1] }}</div>
+                    <div><b>ID: </b><i>{{ i[6] }}</i></div>
+                    <div><b>Description: </b>{{ i[3] }}</div>
                     <div id="ext_rating">
                         <div class="stars-outer">
                             <div class="stars-inner"></div>
@@ -75,7 +74,21 @@
         <div id="vis_toggle" class="box grid_col_span_2 grid_row_span_2">
             <div class="box_spacing">
                 <div class="title">RetireJS Output</div>
-                <div id="res_box">{{ result }}</div>
+                <div class="main_retire_box">
+                    {% if result %}
+                    {% for file_path, vul_name, info, severity, summary, CVE in result %}
+                    <div class="retire_box">
+                        <div class="box_spacing">
+                            <div class="title">{{ vul_name }}</div>
+                            <div class="{{ severity }} severity_tag">{{ severity }}</div>
+                            <div class="text"><b>File Path: </b><i>{{ file_path }}</i></div>
+                            <div class="text"><b>Summary: </b>{{ summary }}</div>
+                            <div class="text">{{ CVE }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
             </div>
         </div>
         <div class="box medium_box grid_col_span_2">
