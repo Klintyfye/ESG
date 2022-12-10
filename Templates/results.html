@@ -89,26 +89,11 @@
                                 <i id="drop_icon" class="fa fa-search"></i>
                                 <input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()">
                             </div>
-                            <a href="#about">About</a>
-                            <a href="#base">Base</a>
-                            <a href="#blog">Blog</a>
-                            <a href="#contact">Contact</a>
-                            <a href="#custom">Custom</a>
-                            <a href="#support">Support</a>
-                            <a href="#tools">Tools</a>
-                            <a href="#tools">Tools</a>
-                            <a href="#tools">Tools</a>
-                            <a href="#tools">Toolshntshntshntshntshntshntshntshntshntshntshntshntshntshntshntshntshntshntshntoshntishntaios</a>
-                            <a href="#tools">Tools</a>
-                            <a href="#tools">Tools</a>
-                            <a href="#tools">Tools</a>
-                            <a href="#tools">Tools</a>
-                            <a href="#tools">Tools</a>
-                            <a href="#tools">Tools</a>
-                            <a href="#tools">Tools</a>
-                            <a href="#tools">Tools</a>
-                            <a href="#tools">Tools</a>
-                            <a href="#tools">Tools</a>
+                            {% if previous_hash %}
+                            {% for hash in previous_hash %}
+                            <a href="#{{hash}}">{{hash}}</a>
+                            {% endfor %}
+                            {% endif %}
                         </div>
                     </div>
                 </div>

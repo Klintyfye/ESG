@@ -121,9 +121,12 @@ def results():
         #Creates charts of file and history
         result, test, labels, colors = pie(path)
         history_img = history(extension_id)
-
+        previous_hash=[]
+        previous_extensions=mongo_API.get_by_id(extension_id)
+        for extension in previous_extensions:
+            previous_hash.append(extension["hash"])
         #Renders result
-        return render_template("results.html", extension_info = extension_info ,result = result,test = test, test2 = history_img, lables_colors=zip(labels, colors))
+        return render_template("results.html", previous_hash=previous_hash, extension_info = extension_info ,result = result,test = test, test2 = history_img, lables_colors=zip(labels, colors))
 
     #Extension id ending in "crx" signifies local upload
     else:
@@ -329,9 +332,11 @@ def in_db():
             result, test, labels, colors = pie(path)
             history_img = history(extension_id)
 
-            print('########################')
-
-            return render_template("results.html", result = result, extension_info = extension_info ,test = test, test2 = history_img, lables_colors=zip(labels, colors))
+            previous_hash=[]
+            previous_extensions=mongo_API.get_by_id(extension_id)
+            for extension in previous_extensions:
+                previous_hash.append(extension["hash"])
+            return render_template("results.html",previous_hash=previous_hash, result = result, extension_info = extension_info ,test = test, test2 = history_img, lables_colors=zip(labels, colors))
         #Extension id ending in "crx" signifies local upload
         else:
             #Gathers metadata of extension
