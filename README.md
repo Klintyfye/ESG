@@ -3,7 +3,7 @@
 This is a product made by ESG for Softhouse © 2022.
 Using this product, you can upload or select a Chrome web extension in order to receive a risk analysis of it.
 
-It is designed to be run on Linux.
+It is designed to be run on Ubuntu Linux.
 
 # Manual
 
@@ -22,4 +22,4 @@ The first time you use this product, begin by running setup.sh to ensure you hav
 5. You should now see the results screen.
     1. In the center, there is a pie chart displaying what vulnerabilities were detected.
     2. On the right, there is a chart. If the extension has been scanned multiple times over various dates, you will see how the amount of risks in the extension have changed over time.
-    3. On the left, there is information about the extension. There is also an "advanced view" button, which displays the output of the retireJS algorithm. NOTE: This is recommended for advanced users only.
+    3. On the left, there is information about the extension. There is also an "advanced view" button, which displays the output of the retireJS algorithm.
