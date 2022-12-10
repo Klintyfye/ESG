@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
     <script src="static/rating.js"></script>
     <script src="static/vis_toggle.js"></script>
+    <script src="static/dropdown.js"></script>
 </head>
 <body>
     <nav id="nav1">
@@ -60,7 +61,7 @@
         </div>
         <div class="box medium_box">
             <div class="box_spacing">
-                <div class="title">Vulnerabilitie Scan</div>
+                <div class="title">Vulnerability Scan</div>
                 <div id="label_box">
                     {% if lables_colors %}
                     {% for labels, colors in lables_colors %}
@@ -79,7 +80,38 @@
         </div>
         <div class="box medium_box grid_col_span_2">
             <div class="box_spacing">
-                <div class="title">JS-library Vulnerabilities</div>
+                <div>
+                    <div id="history_title" class="title inline_block">JS-library Vulnerabilities</div>
+                    <div class="dropdown">
+                        <button onclick="toggle_dropdown()" class="dropbtn">History</button>
+                        <div id="history_dropdown" class="dropdown-content">
+                            <div id="ver_search">
+                                <i id="drop_icon" class="fa fa-search"></i>
+                                <input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()">
+                            </div>
+                            <a href="#about">About</a>
+                            <a href="#base">Base</a>
+                            <a href="#blog">Blog</a>
+                            <a href="#contact">Contact</a>
+                            <a href="#custom">Custom</a>
+                            <a href="#support">Support</a>
+                            <a href="#tools">Tools</a>
+                            <a href="#tools">Tools</a>
+                            <a href="#tools">Tools</a>
+                            <a href="#tools">Toolshntshntshntshntshntshntshntshntshntshntshntshntshntshntshntshntshntshntshntoshntishntaios</a>
+                            <a href="#tools">Tools</a>
+                            <a href="#tools">Tools</a>
+                            <a href="#tools">Tools</a>
+                            <a href="#tools">Tools</a>
+                            <a href="#tools">Tools</a>
+                            <a href="#tools">Tools</a>
+                            <a href="#tools">Tools</a>
+                            <a href="#tools">Tools</a>
+                            <a href="#tools">Tools</a>
+                            <a href="#tools">Tools</a>
+                        </div>
+                    </div>
+                </div>
                 <img id="history_img" src = {{ test2 }}> </img>
             </div>
         </div>
