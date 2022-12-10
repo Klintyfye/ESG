@@ -319,41 +319,12 @@ def in_db():
     path = max(glob.iglob(app.config['UPLOAD_CRX_FOLDER']+'/*'),key=os.path.getctime)
     extension_id= path.split('/')[-1]
     if response.upper() == 'Y':
-        #Extension id NOT ending in "crx" signifies CWS
-        if extension_id.split('.')[-1] != 'crx':
-            extension_info = CWS_API.get_item(extension_id)
-
-            #Gathers metadata of extension
-            meta = {"cwsId":extension_id, "name": extension_info[0][1]}
-
-            #Scans crx
-            scan.scan(path, meta)
-
-            #Creates charts of file and history
-            result, test, labels, colors = pie(path)
-            history_img = history(extension_id)
-
-            #Renders result
-            return render_template("results.html", extension_info = extension_info ,result = result,test = test, test2 = history_img, lables_colors=zip(labels, colors))
-
-        #Extension id ending in "crx" signifies local upload
-        else:
-            #Gathers metadata of extension
-            meta = {"cwsId":"None", "name": extension_id}
-
-            #Scans crx
-            result = scan.scan(path, meta)
-            #Creates pie chart
-            result, test, labels, colors = pie(path)
-
-            #Renders result
-            return render_template("results.html", result = result, test = test, lables_colors=zip(labels, colors))
+        results()
     else:
         #Extension id NOT ending in "crx" signifies CWS
         if extension_id.split('.')[-1] != 'crx':
             extension_id= path.split('/')[-1]
             extension_info = CWS_API.get_item(extension_id)
-
             #Creates charts of file and history
             result, test, labels, colors = pie(path)
             history_img = history(extension_id)
@@ -365,12 +336,9 @@ def in_db():
         else:
             #Gathers metadata of extension
             meta = {"cwsId":"None", "name": extension_id}
-
             #Scans crx
-            result = scan.scan(path, meta)
             #Creates pie chart
             result, test, labels, colors = pie(path)
-
             #Renders result
             return render_template("results.html", result = result, test = test, lables_colors=zip(labels, colors))
 
