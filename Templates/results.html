@@ -100,11 +100,14 @@
                         <div id="history_dropdown" class="dropdown-content">
                             <div id="ver_search">
                                 <i id="drop_icon" class="fa fa-search"></i>
-                                <input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()">
+                                    <input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()" name ='hash' >
+                                </form>
                             </div>
                             {% if previous_hash %}
                             {% for hash in previous_hash %}
-                            <a href="#{{hash}}">{{hash}}</a>
+                            <form action='/results' method="post">
+                                <input class="button_style" type="submit" name="hash" value="{{hash}}">
+                            </form>
                             {% endfor %}
                             {% endif %}
                         </div>
