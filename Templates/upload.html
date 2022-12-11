@@ -61,7 +61,7 @@
     {% if content %}
         <div id="api_results">
             {% for i in content %}
-                <form action="/analyze" method="post" id="analyze" class = "form">
+                <form action="/upload" method="post" id="analyze" class = "form">
                     <div id="result_tab" class="{{ i[6] }}">
                         <image id="result_img" src={{ i[2] }}></image>
                         <span id="result_text">{{ i[1] }}</span>

@@ -1,42 +1,71 @@
 html, body {
 	height: 100%;
- }
+}
 
- body {
-	align-items: center;
-	background-color: #225e7c;
-	display: table;
-	justify-content: center;
-	margin: 200px auto;
- }
+body {
+	background-color: #efefef;
+	margin: auto;
+	width: 50%;
+	padding: 10px;
+	text-align: center;
+}
 
- .loader  {
+#form_wrapper {
+	background-color: #ffffff;
+	border-radius: 15px;
+	box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.199);
+	padding: 10px;
+}
+
+.button_style {
+	font-family:Arial, Helvetica, sans-serif;
+	padding: 7px 10px;
+	cursor: pointer;
+	background-color: #a0a0a0; /* Green */
+	border: none;
+	color: white;
+	text-align: center;
+	text-decoration: none;
+	font-size: 16px;
+	border-radius: 10px;
+	box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.199);
+}
+
+.button_style:hover {
+	background-color: #7c7c7c;
+}
+
+
+.loader {
 	animation: rotate 1s infinite;
 	height: 50px;
 	width: 50px;
- }
+	margin-top: 50px;
+	margin-left: auto;
+  	margin-right: auto;
+}
 
- .loader:before,
- .loader:after {
+.loader:before,
+.loader:after {
 	border-radius: 50%;
 	content: '';
 	display: block;
 	height: 20px;
 	width: 20px;
- }
- .loader:before {
+}
+.loader:before {
 	animation: ball1 1s infinite;
-	background-color: #cb2025;
-	box-shadow: 30px 0 0 #f8b334;
+	background-color: #22577a;
+	box-shadow: 30px 0 0 #38a3a5;
 	margin-bottom: 10px;
- }
- .loader:after {
+}
+.loader:after {
 	animation: ball2 1s infinite;
-	background-color: #00a096;
-	box-shadow: 30px 0 0 #97bf0d;
- }
+	background-color: #57cc99;
+	box-shadow: 30px 0 0 #80ed90;
+}
 
- @keyframes rotate {
+@keyframes rotate {
 	0% {
 	  -webkit-transform: rotate(0deg) scale(0.8);
 	  -moz-transform: rotate(0deg) scale(0.8);
@@ -49,41 +78,36 @@ html, body {
 	  -webkit-transform: rotate(720deg) scale(0.8);
 	  -moz-transform: rotate(720deg) scale(0.8);
 	}
- }
+}
 
- @keyframes ball1 {
+@keyframes ball1 {
 	0% {
-	  box-shadow: 30px 0 0 #f8b334;
+	  box-shadow: 30px 0 0 #38a3a5;
 	}
 	50% {
-	  box-shadow: 0 0 0 #f8b334;
+	  box-shadow: 0 0 0 #38a3a5;
 	  margin-bottom: 0;
 	  -webkit-transform: translate(15px,15px);
 	  -moz-transform: translate(15px, 15px);
 	}
 	100% {
-	  box-shadow: 30px 0 0 #f8b334;
+	  box-shadow: 30px 0 0 #38a3a5;
 	  margin-bottom: 10px;
 	}
- }
+}
 
- @keyframes ball2 {
+@keyframes ball2 {
 	0% {
-	  box-shadow: 30px 0 0 #97bf0d;
+	  box-shadow: 30px 0 0 #80ed90;
 	}
 	50% {
-	  box-shadow: 0 0 0 #97bf0d;
+	  box-shadow: 0 0 0 #80ed90;
 	  margin-top: -20px;
 	  -webkit-transform: translate(15px,15px);
 	  -moz-transform: translate(15px, 15px);
 	}
 	100% {
-	  box-shadow: 30px 0 0 #97bf0d;
+	  box-shadow: 30px 0 0 #80ed90;
 	  margin-top: 0;
 	}
- }
-
- .checkboxes
- {
-	float: right;
- }
+}
