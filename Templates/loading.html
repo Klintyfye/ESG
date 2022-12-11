@@ -28,87 +28,26 @@
     <br/> <br/>
     <div class="checkboxes">
         <form id = 'form' method="post" action="/results">
-            Scanning in virustotal <p id="timer1" "></p>
-            <br/> <br/>
-            Scanning in retireJS <p id="timer2" ></p>
-            <br/> <br/>
-            Analyzing Data <p id="timer3" ></p>
-            <br/> <br/>
-            Uploading to the database <p id="timer4" ></p>
-            <br/> <br/>
-            Currently in stage <p id="stage"></p>
+            Program is running. Time elapsed: <p id="timer1" "></p>
+            <br/> If program takes more than 5 minutes, a restart is recommended. <br/>
+
 
             <script>
-    
-            var task1timer = 0; 
-            var task2timer = 0;
-            var task3timer = 0;
-            var task4timer = 0;
-            var stage = 1; //What task we're currently on is stored here. 
-            const start = new Date().getTime();
+                const start = new Date().getTime();
             var x = setInterval(function(task){
                 var now = new Date().getTime();
                 var distance = Math.floor((now-start)/1000);
-                distance = distance - task1timer - task2timer - task3timer - task4timer;
-                // document.getElementById("stage").innerHTML = stage;
-
-                // $.ajax({
-                //     url: "/stages",
-                //     type: "GET",
-                //     contentType: "application/json"
-                // })
-                // // Waits for the response from flask
-                // .then(function (response){
-                //     console.log(response);
-                // })
-
-
-                if (stage == 1){ //VT is working...
-                    document.getElementById("timer1").innerHTML = distance;
-                }
-                if (stage == 1 && distance > 4){ //TODO: Replace this with VT completion.
-                    stage = 2;
-                    if (task1timer == 0){
-                        task1timer = distance;
+                if (distance < 600){
+                    if (distance%60 < 10){
+                        document.getElementById("timer1").innerHTML = "0"+Math.floor(distance/60) + ":" + "0" +distance%60;
                     }
-                    document.getElementById("timer1").innerHTML = "Done in " + task1timer.toString();
-
-                }
-                if (stage == 2){ //RetireJS is working...
-                    document.getElementById("timer2").innerHTML = distance;
-                }
-                if (stage == 2 && distance > 5){ //TODO: Replace this with RetireJS completion.
-                    stage = 3;
-                    if (task2timer == 0){
-                        task2timer = distance;
+                    else{
+                        document.getElementById("timer1").innerHTML = "0"+Math.floor(distance/60) + ":" + distance%60;
                     }
-                    document.getElementById("timer2").innerHTML = "Done in " + task2timer.toString();
-                }
-                if (stage == 3){ //Data is being analyzed...
-                    document.getElementById("timer3").innerHTML = distance;
-                }
-                if (stage == 3 && distance > 7){ //TODO: Replace this with analyze completion.
-                    stage = 4;
-                    if (task3timer == 0){
-                        task3timer = distance;
-                    }
-                    document.getElementById("timer3").innerHTML = "Done in " + task3timer.toString();
-                }
-                if (stage == 4){ //Data is being uploaded to the database...
-                    document.getElementById("timer4").innerHTML = distance;
-                }
-                if (stage == 4 && distance > 10){ //TODO: Replace this with DB completion
-                    stage = 5;
-                    if (task4timer == 0){
-                        task4timer = distance;
-                    }
-                    document.getElementById("timer4").innerHTML = "Done in " + task4timer.toString();
-                }
 
-
-
-
-                // document.getElementById("timer1").innerHTML = distance;
+                }else{
+                    document.getElementById("timer1").innerHTML = ">10 Minutes";
+                }
             }, 1000);
 
             </script>
