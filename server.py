@@ -129,7 +129,7 @@ def results():
             for extension in previous_extensions:
                 previous_hash.append(extension["hash"])
             # Parse result
-            file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list = adv_view_data(str(result))
+            file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list = adv_view_data(str(result_db))
             #Renders result
             return render_template("results.html", previous_hash=previous_hash, extension_info = extension_info , result=zip(file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list), test = test, test2 = history_img, lables_colors=zip(labels, colors))
 
@@ -142,7 +142,7 @@ def results():
             #Creates pie chart
             result_db, test , labels, colors = pie(readable_hash)
             # Parse result
-            file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list = adv_view_data(str(result))
+            file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list = adv_view_data(str(result_db))
             #Renders result
             return render_template("results.html", result=zip(file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list), test = test, lables_colors=zip(labels, colors))
     elif hash:
