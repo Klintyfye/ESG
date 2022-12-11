@@ -81,7 +81,7 @@ def if_file_queued(path):
     #print(sha256_value)
     with open(filename, "w") as file_object:
         json.dump(info, file_object)
-    #time.sleep(3)
+    time.sleep(3)
     return sha256_value
 
 
