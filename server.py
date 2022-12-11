@@ -367,10 +367,19 @@ def adv_view_data(result):
             info_list.append(alist["retireJs"][i]["results"][0]["vulnerabilities"][j]["info"])
             severity_list.append(alist["retireJs"][i]["results"][0]["vulnerabilities"][j]["severity"])
             summary_list.append(alist["retireJs"][i]["results"][0]["vulnerabilities"][j]["identifiers"]["summary"])
-            CVE_list.append(alist["retireJs"][i]["results"][0]["vulnerabilities"][j]["identifiers"]["CVE"][0])
-
+            try:
+                temp = alist["retireJs"][i]["results"][0]["vulnerabilities"][j]["identifiers"]["CVE"][0]
+            except:
+                print("no CVE")
+            else:
+                CVE_list.append(temp)
     return file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list
 
+@app.route('/get_by_hash', methods=['POST', 'GET']) 
+def get_by_hash():
+    if request.method == 'POST':
+        hash = request.form.get('hash')  
+        results(hash)
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1',port=5000,debug=True,threaded=True)
