@@ -102,7 +102,7 @@ def url_for_analysis_report_from_hash(path):
        json.dump(json_data1, file_object)
 
 
-def virustotal( path):
+def virustotal(path):
     path = path
     url_for_large_file()
     url_for_upload(path)
