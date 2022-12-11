@@ -103,48 +103,68 @@ def upload_file():
 
 @app.route('/results', methods=['POST', 'GET'])
 def results():
+    if request.method == 'POST':
+        response = request.form.get('response')    
     #Chose most recently uploaded crx as path
     path = max(glob.iglob(app.config['UPLOAD_CRX_FOLDER']+'/*'),key=os.path.getctime)
-    """path to crx"""
-    #Get hash of crx
-        #Get extension id
+    #Get extension id
     extension_id= path.split('/')[-1]
+    #Check the response
+    if (response == 'Y' or response == 'y' or response == None):
     #Extension id NOT ending in "crx" signifies CWS
-    if extension_id.split('.')[-1] != 'crx':
-        extension_info = CWS_API.get_item(extension_id)
+        if extension_id.split('.')[-1] != 'crx':
+            extension_info = CWS_API.get_item(extension_id)
+            #Gathers metadata of extension
+            meta = {"cwsId":extension_id, "name": extension_info[0][1]}
+            #Scans crx
+            result = scan.scan(path, meta)
+            #Creates charts of file and history
+            result_db, test, labels, colors = pie(path)
+            history_img = history(extension_id)
+            previous_hash=[]
+            previous_extensions=mongo_API.get_by_id(extension_id)
+            for extension in previous_extensions:
+                previous_hash.append(extension["hash"])
+            # Parse result
+            file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list = adv_view_data(str(result))
+            #Renders result
+            return render_template("results.html", previous_hash=previous_hash, extension_info = extension_info , result=zip(file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list), test = test, test2 = history_img, lables_colors=zip(labels, colors))
 
-        #Gathers metadata of extension
-        meta = {"cwsId":extension_id, "name": extension_info[0][1]}
-
-        #Scans crx
-        scan.scan(path, meta)
-
-        #Creates charts of file and history
-        result, test, labels, colors = pie(path)
-        history_img = history(extension_id)
-        previous_hash=[]
-        previous_extensions=mongo_API.get_by_id(extension_id)
-        for extension in previous_extensions:
-            previous_hash.append(extension["hash"])
-        # Parse result
-        file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list = adv_view_data(str(result))
-        #Renders result
-        return render_template("results.html", previous_hash=previous_hash, extension_info = extension_info , result=zip(file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list), test = test, test2 = history_img, lables_colors=zip(labels, colors))
-
-    #Extension id ending in "crx" signifies local upload
+        #Extension id ending in "crx" signifies local upload
+        else:
+            #Gathers metadata of extension
+            meta = {"cwsId":"None", "name": extension_id}
+            #Scans crx
+            result = scan.scan(path, meta)
+            #Creates pie chart
+            result_db, test , labels, colors = pie(path)
+            # Parse result
+            file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list = adv_view_data(str(result))
+            #Renders result
+            return render_template("results.html", result=zip(file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list), test = test, lables_colors=zip(labels, colors))
     else:
-        #Gathers metadata of extension
-        meta = {"cwsId":"None", "name": extension_id}
-
-        #Scans crx
-        result = scan.scan(path, meta)
-
-        #Creates pie chart
-        result, test , labels, colors = pie(path)
-        # Parse result
-        file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list = adv_view_data(str(result))
-        #Renders result
-        return render_template("results.html", result=zip(file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list), test = test, lables_colors=zip(labels, colors))
+        #Extension id NOT ending in "crx" signifies CWS
+        if extension_id.split('.')[-1] != 'crx':
+            extension_id= path.split('/')[-1]
+            extension_info = CWS_API.get_item(extension_id)
+            #Creates charts of file and history
+            result_db, test, labels, colors = pie(path)
+            history_img = history(extension_id)
+            previous_hash=[]
+            previous_extensions=mongo_API.get_by_id(extension_id)
+            for extension in previous_extensions:
+                previous_hash.append(extension["hash"])
+            # Parse result
+            file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list = adv_view_data(str(result_db))
+            return render_template("results.html",previous_hash=previous_hash, result=zip(file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list), extension_info = extension_info ,test = test, test2 = history_img, lables_colors=zip(labels, colors))
+        #Extension id ending in "crx" signifies local upload
+        else:
+            #Creates pie chart
+            result_db, test, labels, colors = pie(path)
+            # Parse result
+            file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list = adv_view_data(str(result_db))
+            #Renders result
+            return render_template("results.html", result=zip(file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list), test = test, lables_colors=zip(labels, colors))
 
 
 @app.route('/search', methods=['POST', 'GET'])
@@ -341,43 +361,6 @@ def adv_view_data(result):
 
     return file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list
 
-@app.route('/in_db', methods=['POST', 'GET'])
-def in_db():
-    if request.method == 'POST':
-        response = request.form.get('response')
-    else:
-        return render_template('loading.html', in_db = 'yes')
-    path = max(glob.iglob(app.config['UPLOAD_CRX_FOLDER']+'/*'),key=os.path.getctime)
-    extension_id= path.split('/')[-1]
-    if response.upper() == 'Y':
-        results()
-    else:
-        #Extension id NOT ending in "crx" signifies CWS
-        if extension_id.split('.')[-1] != 'crx':
-            extension_id= path.split('/')[-1]
-            extension_info = CWS_API.get_item(extension_id)
-            #Creates charts of file and history
-            result, test, labels, colors = pie(path)
-            history_img = history(extension_id)
-
-            previous_hash=[]
-            previous_extensions=mongo_API.get_by_id(extension_id)
-            for extension in previous_extensions:
-                previous_hash.append(extension["hash"])
-            # Parse result
-            file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list = adv_view_data(str(result))
-            return render_template("results.html",previous_hash=previous_hash, result=zip(file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list), extension_info = extension_info ,test = test, test2 = history_img, lables_colors=zip(labels, colors))
-        #Extension id ending in "crx" signifies local upload
-        else:
-            #Gathers metadata of extension
-            meta = {"cwsId":"None", "name": extension_id}
-            #Scans crx
-            #Creates pie chart
-            result, test, labels, colors = pie(path)
-            # Parse result
-            file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list = adv_view_data(str(result))
-            #Renders result
-            return render_template("results.html", result=zip(file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list), test = test, lables_colors=zip(labels, colors))
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1',port=5000,debug=True,threaded=True)
