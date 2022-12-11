@@ -107,39 +107,13 @@ def results():
         hash =  request.form.get('hash')
     #Chose most recently uploaded crx as path
     path = max(glob.iglob(app.config['UPLOAD_CRX_FOLDER']+'/*'),key=os.path.getctime)
-    """path to crx"""
-    extension_id = path.split('/')[-1]
-    extension_info = CWS_API.get_item(extension_id)
-
-    #Gathers metadata of extension
-    # meta = {"cwsId":extension_id, "name": extension_info[0][1]}
-    meta = {"cwsId":"None", "name": extension_id}
-
-    #Scans crx
-    scan.scan(path, meta)
-
-    return render_results()
-
-def scan_file():
-    #Chose most recently uploaded crx as path
-    path = max(glob.iglob(app.config['UPLOAD_CRX_FOLDER']+'/*'),key=os.path.getctime)
-    """path to crx"""
-    extension_id = path.split('/')[-1]
-    extension_info = CWS_API.get_item(extension_id)
-
-    #Gathers metadata of extension
-    # meta = {"cwsId":extension_id, "name": extension_info[0][1]}
-    meta = {"cwsId":"None", "name": extension_id}
-
-    #Scans crx
-    scan.scan(path, meta)
-
-    return render_results()
-
-def render_results():
-    path = max(glob.iglob(app.config['UPLOAD_CRX_FOLDER']+'/*'),key=os.path.getctime)
-    extension_id = path.split('/')[-1]
-
+    with open(path,"rb") as f:
+            bytes = f.read() # read entire file as bytes
+            readable_hash = hashlib.sha256(bytes).hexdigest()
+    #Get extension id
+    extension_id= path.split('/')[-1]
+    #Check the response
+    if (response == 'Yes' or response == None) and (hash == None):
     #Extension id NOT ending in "crx" signifies CWS
         if extension_id.split('.')[-1] != 'crx':
             extension_info = CWS_API.get_item(extension_id)
@@ -393,16 +367,15 @@ def adv_view_data(result):
             info_list.append(alist["retireJs"][i]["results"][0]["vulnerabilities"][j]["info"])
             severity_list.append(alist["retireJs"][i]["results"][0]["vulnerabilities"][j]["severity"])
             summary_list.append(alist["retireJs"][i]["results"][0]["vulnerabilities"][j]["identifiers"]["summary"])
-            try:
-                temp = alist["retireJs"][i]["results"][0]["vulnerabilities"][j]["identifiers"]["CVE"][0]
-            except:
-                print("no CVE")
-            else:
-                CVE_list.append(temp)
-            
+            CVE_list.append(alist["retireJs"][i]["results"][0]["vulnerabilities"][j]["identifiers"]["CVE"][0])
 
     return file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list
 
+@app.route('/get_by_hash', methods=['POST', 'GET']) 
+def get_by_hash():
+    if request.method == 'POST':
+        hash = request.form.get('hash')  
+        results(hash)
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1',port=5000,debug=True,threaded=True)
