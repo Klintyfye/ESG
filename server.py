@@ -116,6 +116,13 @@ def results():
     #Extension id NOT ending in "crx" signifies CWS
         if extension_id.split('.')[-1] != 'crx':
             extension_info = CWS_API.get_item(extension_id)
+            if len(extension_info) > 1:
+                for i in range(len(extension_info)):
+                    if extension_id == (extension_info[i][0].split('/')[-1]):
+                        extension_info = [extension_info[i]]
+                        break
+                    else:
+                        pass
             #Gathers metadata of extension
             meta = {"cwsId":extension_id, "name": extension_info[0][1]}
             #Scans crx
@@ -163,6 +170,13 @@ def results():
         if extension_id.split('.')[-1] != 'crx':
             extension_id= path.split('/')[-1]
             extension_info = CWS_API.get_item(extension_id)
+            if len(extension_info) > 1:
+                for i in range(len(extension_info)):
+                    if extension_id == (extension_info[i][0].split('/')[-1]):
+                        extension_info = [extension_info[i]]
+                        break
+                    else:
+                        pass
             #Creates charts of file and history
             result_db, test, labels, colors = pie(readable_hash)
             history_img = history(extension_id)
