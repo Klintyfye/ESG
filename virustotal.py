@@ -16,7 +16,7 @@ def url_for_large_file():
     cnt = 15
     first_header = {
         "accept": "application/json",
-        "x-apikey": "51bff97d51ac2996b0b64155402f55cc8960cdfbfcd3f5361eff4fd9f2dc65b2"
+        "x-apikey": "4926e23cc9acaa6110047cd35fa667a46e8acf4c889d5d7881e8859008df4e3c"
     }
 
     first_second_response = requests.get(url_for_large_files, headers=first_header)
@@ -32,7 +32,7 @@ def url_for_upload(path):
     files = {"file": open(path, "rb")}
     second_header = {
         "accept": "application/json",
-        "x-apikey": "4926e23cc9acaa6110047cd35fa667a46e8acf4c889d5d7881e8859008df4e3c"
+        "x-apikey": "d4d50fe1962ad63bd711835def05540f49413c3c522a05983256df870da0a950"
     }
 
     second_response = requests.post(url_for_upload, files=files, headers=second_header)
@@ -61,7 +61,7 @@ def url_for_analysis_report(path):
     url_for_analysis_report = "https://www.virustotal.com/api/v3/analyses/"+rest_of_string
     fourth_header = {
         "accept": "application/json",
-        "x-apikey": "d16649ccb180832552aa0a0d6a91b57103da5fd1a6d979cda653401f301185e6"
+        "x-apikey": "aeb0ce92bba877752c47a65ac431ecc9988c782ca3679a84abc792b1f326610b"
     }
     third_response = requests.get(url_for_analysis_report, headers=fourth_header)
     json_data = json.loads(third_response.text)
