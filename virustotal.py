@@ -103,9 +103,5 @@ def url_for_analysis_report_from_hash(path):
 
 
 def virustotal(path):
-    path = path
-    url_for_large_file()
-    url_for_upload(path)
-    url_for_analysis_report(path)
     url_for_analysis_report_from_hash(path)
     if_file_queued(path)
