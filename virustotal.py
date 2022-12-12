@@ -5,9 +5,6 @@ import json
 import time
 
 
-#path = "C:/Users/saifa/OneDrive/Dokument/DV1512/projekt_code/flask/uploadeZip.zip"
-# path = "/mnt/c/Users/saifa/OneDrive/Dokument/DV1512/projekt_code/flask/uploadeZip.zip"
-
 
 def url_for_large_file():
 
