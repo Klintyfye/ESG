@@ -83,7 +83,6 @@ def upload_file():
             with open(path,"rb") as f:
                 bytes = f.read() # read entire file as bytes
             readable_hash = hashlib.sha256(bytes).hexdigest()
-
             #Check if extension already exists in database
             exist = mongo_API.get_by_hash(readable_hash)
 
@@ -144,7 +143,7 @@ def results():
             # Parse result
             file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list = adv_view_data(str(result_db))
             #Renders result
-            return render_template("results.html", result=zip(file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list), test = test, lables_colors=zip(labels, colors))
+            return render_template("results.html", result=zip(file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list), test = test, lables_colors=zip(labels, colors), extension_name = extension_id)
     elif hash:
         result = mongo_API.get_by_hash(hash)
         extension_info = CWS_API.get_item(result['meta']['cwsId'])
@@ -181,7 +180,7 @@ def results():
             # Parse result
             file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list = adv_view_data(str(result_db))
             #Renders result
-            return render_template("results.html", result=zip(file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list), test = test, lables_colors=zip(labels, colors))
+            return render_template("results.html", result=zip(file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list), test = test, lables_colors=zip(labels, colors), extension_name = extension_id)
     
 @app.route('/search', methods=['POST', 'GET'])
 def search():
@@ -232,7 +231,7 @@ def analyze():
         with open(path,"rb") as f:
             bytes = f.read() # read entire file as bytes
         readable_hash = hashlib.sha256(bytes).hexdigest()
-
+        print(readable_hash)
     #Check if extension already exists in database
         exist = mongo_API.get_by_hash(readable_hash)
 
@@ -375,11 +374,6 @@ def adv_view_data(result):
                 CVE_list.append(temp)
     return file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list
 
-@app.route('/get_by_hash', methods=['POST', 'GET']) 
-def get_by_hash():
-    if request.method == 'POST':
-        hash = request.form.get('hash')  
-        results(hash)
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1',port=5000,debug=True,threaded=True)

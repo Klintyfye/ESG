@@ -40,8 +40,8 @@ def scan(crxDir: str, meta: dict) -> Literal[-1,1]:
     #Inserts result json into db
     # print(object)
     #Check if cwsId is None indiciating that it's a local extension and not to be uploaded
-    if object["meta"]["cwsId"] == "None":
-        return 1
+    # if object["meta"]["cwsId"] == "None":
+    #     return 1
 
     return mongo_API.insert_one(object)
 

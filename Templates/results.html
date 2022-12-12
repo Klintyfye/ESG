@@ -26,6 +26,13 @@
     <div class="main_box">
         <div class="box medium_box">
             <div class="box_spacing">
+                {% if extension_name %}
+                <div id="desc_box">
+                    <div class="title">Extension Information</div>
+                    <div><b>Name: </b>{{ extension_name }}</div>
+                    <button id="adv_view" onclick="vis_toggle()">Advanced View</button>
+                    </div>
+                {% endif %}
                 {% if extension_info %}
                 {% for i in extension_info %}
                 <div id="desc_box">
@@ -99,8 +106,6 @@
                         <button onclick="toggle_dropdown()" class="dropbtn">History</button>
                         <div id="history_dropdown" class="dropdown-content">
                             <div id="ver_search">
-                                <i id="drop_icon" class="fa fa-search"></i>
-                                    <input type="text" placeholder="Search.." id="myInput" onkeyup="filterFunction()" name ='hash' >
                                 </form>
                             </div>
                             {% if previous_hash %}
