@@ -9,7 +9,7 @@ It is designed to be run on Ubuntu Linux.
 
 ## First Time Setup
 
-The first time you use this product, begin by running setup.sh to ensure you have all the necessary libraries. Additionally, you must make sure the APIKEY in constants.py has the key for a mongoDB database.
+The first time you use this product, begin by running installscript.sh to ensure you have all the necessary libraries. Additionally, you must make sure the APIKEY in constants.py has the key for a mongoDB database.
 
 ## Usage
 
