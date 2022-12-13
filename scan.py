@@ -4,6 +4,7 @@ import mongo_API
 import result_compile
 import retire
 import virustotal
+import shutil
 
 def scan(crxDir: str, meta: dict) -> Literal[-1,1]:
     """Takes path of crx and its cwsId and scans, compiles results, and uploads to database
@@ -32,7 +33,7 @@ def scan(crxDir: str, meta: dict) -> Literal[-1,1]:
     #Run retireJS scan on folder and create result json "retireResult.json"
     retire.runRetire(extractedDir)
     jsDir = "retireResult.json"
-
+    shutil.rmtree(extractedDir)
     print("Börja compile")
     #Compiles results from retireJS and virusTotal
     object = result_compile.compile_result(jsDir, vtDir, meta)
