@@ -2,6 +2,7 @@ import os      # For File Manipulations like get paths, rename
 from flask import Flask, flash, request, redirect, render_template, url_for
 from werkzeug.utils import secure_filename
 from fileinput import filename
+import time
 # <<<<<<< HEAD
 import CWS_API
 import scan
@@ -50,7 +51,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 ALLOWED_EXTENSIONS = set(['crx'])
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
+extension_file_path= []
 #Renders upload html as root page
 @app.route('/')
 def upload_form():
@@ -78,16 +79,14 @@ def upload_file():
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_CRX_FOLDER'], filename))
             path = os.path.join(app.config['UPLOAD_CRX_FOLDER'], filename)
-            print(path)
             #Get hash of crx
             with open(path,"rb") as f:
                 bytes = f.read() # read entire file as bytes
             readable_hash = hashlib.sha256(bytes).hexdigest()
             #Check if extension already exists in database
-            exist = mongo_API.get_by_hash(readable_hash)
-
+            hash_exist = mongo_API.get_by_hash(readable_hash)
             #if extension is NOT in database
-            if exist == None:
+            if hash_exist == None:
                 return render_template('loading.html')
             else:
             #if extension is in database
@@ -104,6 +103,10 @@ def results():
     if request.method == 'POST':
         response = request.form.get('response') 
         hash =  request.form.get('hash')
+    if extension_file_path != []:
+        crx_downloader.download_crx(extension_file_path[0])
+        extension_file_path.pop()
+
     #Chose most recently uploaded crx as path
     path = max(glob.iglob(app.config['UPLOAD_CRX_FOLDER']+'/*'),key=os.path.getctime)
     with open(path,"rb") as f:
@@ -237,24 +240,24 @@ def analyze():
      """
     if request.method == 'POST':
         extension_name = request.form.get('extension_name')
-        crx_downloader.download_crx(extension_name)
-        """path to crx"""
-        path = os.path.join(app.config['UPLOAD_CRX_FOLDER'], extension_name.split('/')[-1])
-        print(path)
-        #Get hash of crx
+    #append the extension file path  to the extension_file_path list
+    extension_file_path.append(extension_name)
+    #path to crx
+    path = os.path.join(app.config['UPLOAD_CRX_FOLDER'], extension_name.split('/')[-1])
+    file_exist = os.path.exists(path)
+    #Get hash of crx
+    if file_exist:
         with open(path,"rb") as f:
             bytes = f.read() # read entire file as bytes
         readable_hash = hashlib.sha256(bytes).hexdigest()
-        print(readable_hash)
-    #Check if extension already exists in database
-        exist = mongo_API.get_by_hash(readable_hash)
-
-    #if extension is NOT in database
-        if exist == None:
+        #Check if extension already exists in database
+        hash_exist = mongo_API.get_by_hash(readable_hash)
+        #if extension is NOT in database
+        if hash_exist == None:
             return render_template('loading.html')
         else:
             return render_template('loading.html', in_db = 'yes')
-
+    return render_template('loading.html')
 
 def pie(hash):
     result = mongo_API.get_by_hash(hash)
@@ -388,7 +391,5 @@ def adv_view_data(result):
                 CVE_list.append(temp)
     return file_path_list, vul_name_list, info_list, severity_list, summary_list, CVE_list
 
-
 if __name__ == "__main__":
     app.run(host='127.0.0.1',port=5000,debug=True,threaded=True)
-
