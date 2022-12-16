@@ -8,7 +8,7 @@ def autocomplete(extension_name):
     """
     extension_name = extension_name.replace(" ", "%20") # Support for space
     extension_name  = extension_name.replace("\"", "") # Not a good solution but it works. There is something worng with the string interpretation of the search bar.
-
+    extension_name = extension_name .encode('ascii', 'ignore').decode('ascii')
     conn = http.client.HTTPSConnection("chrome.google.com")
 
     # Since we weren't given the API from google, the calls are 'special'. If the
@@ -34,7 +34,7 @@ def get_item(alist):
     """
     alist =  " ".join(alist.split())
     alist = alist.replace(" ", ',')
-
+    alist = alist.encode('ascii', 'ignore').decode('ascii')
     conn = http.client.HTTPSConnection("chrome.google.com")
     headers = { 'cookie': "NID=511%3Dcy1Y33x_e4r3px-iJ6uv1Mvh6gccjaOXC3x_USnO7gLk5JczW3vkTmtk97s_dG9fhU2oVKzI4rqkbTXSQe02VnxT9RXaLmTljAx8V4y0G9pAMoua1jZWBe7J_ovwwO-YsFyny6bVC6i9gF1iUQ3kZ7JKRQ7pv1YPu3ypjawopbMtRMXgJhQwwTAgS16NbAEwI_NvjAgW; CONSENT=PENDING%2B895" }
     conn.request("POST", "/webstore/ajax/item?pv=20210820&count=112&searchTerm="+ alist, "", headers)

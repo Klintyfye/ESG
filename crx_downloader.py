@@ -72,7 +72,7 @@ class ChromeExtensionDownloader():
 			# Maybe is possible to ge extension from requests, maybe is to work
 			file_name = basename(extension_url)
 
-		if not dest_dir:
+		if not dest_dir:	
 			dest_dir = dirname(__file__)
 
 		dest_file = join(dest_dir, file_name ) #+ ".crx"
@@ -133,7 +133,4 @@ def download_crx(url):
 	"""
 	user_agent_ver = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36" # This might be a future problem.
 	downloader = ChromeExtensionDownloader().download(url, user_agent_ver)
-	# Logging
-	# print(downloader)
-
-# download_crx('https://chrome.google.com/webstore/detail/adblock-%E2%80%94-best-ad-blocker/gighmmpiobklfepjocnamgkkbiglidom')
+	print('\n')
