@@ -9,7 +9,14 @@ It is designed to be run on Ubuntu Linux.
 
 ## First Time Setup
 
-The first time you use this product, begin by running installscript.sh to ensure you have all the necessary libraries. Additionally, you must make sure the APIKEY in constants.py has the key for a mongoDB database.
+The first time you use this product, begin by running installscript.sh to ensure you have all the necessary libraries. Additionally, you must make sure the APIKEY in constants.py has the key for a MongoDB Atlas database.
+
+### MongoDB Atlas Tutorial
+
+The following link leads to MongoDB Atlas's own getting started page:
+ https://www.mongodb.com/basics/mongodb-atlas-tutorial
+
+After setting up a database as per the previous tutorial, this tutorial explains how one can create their API key: https://www.mongodb.com/docs/atlas/configure-api-access/#std-label-create-org-api-key
 
 ## Usage
 
