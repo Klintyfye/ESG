@@ -105,17 +105,8 @@ def results():
         hash =  request.form.get('hash')
     if extension_file_path != []:
         crx_downloader.download_crx(extension_file_path[0])
-        path = os.path.join(app.config['UPLOAD_CRX_FOLDER'], extension_file_path[0].split('/')[-1])
         extension_file_path.pop()
-        with open(path,"rb") as f:
-            bytes = f.read() # read entire file as bytes
-            readable_hash = hashlib.sha256(bytes).hexdigest()
-            hash_exist = mongo_API.get_by_hash(readable_hash)
-            #if extension is NOT in database
-            if hash_exist == None:
-                return render_template('loading.html')
-            else:
-                return render_template('loading.html', in_db = 'yes')
+
     #Chose most recently uploaded crx as path
     path = max(glob.iglob(app.config['UPLOAD_CRX_FOLDER']+'/*'),key=os.path.getctime)
     with open(path,"rb") as f:
@@ -251,6 +242,21 @@ def analyze():
         extension_name = request.form.get('extension_name')
     #append the extension file path  to the extension_file_path list
     extension_file_path.append(extension_name)
+    #path to crx
+    path = os.path.join(app.config['UPLOAD_CRX_FOLDER'], extension_name.split('/')[-1])
+    file_exist = os.path.exists(path)
+    #Get hash of crx
+    if file_exist:
+        with open(path,"rb") as f:
+            bytes = f.read() # read entire file as bytes
+        readable_hash = hashlib.sha256(bytes).hexdigest()
+        #Check if extension already exists in database
+        hash_exist = mongo_API.get_by_hash(readable_hash)
+        #if extension is NOT in database
+        if hash_exist == None:
+            return render_template('loading.html')
+        else:
+            return render_template('loading.html', in_db = 'yes')
     return render_template('loading.html')
 
 def pie(hash):
