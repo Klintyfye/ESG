@@ -112,9 +112,7 @@ def results():
             readable_hash = hashlib.sha256(bytes).hexdigest()
             hash_exist = mongo_API.get_by_hash(readable_hash)
             #if extension is NOT in database
-            if hash_exist == None:
-                return render_template('loading.html')
-            else:
+            if hash_exist != None:
                 return render_template('loading.html', in_db = 'yes')
     #Chose most recently uploaded crx as path
     path = max(glob.iglob(app.config['UPLOAD_CRX_FOLDER']+'/*'),key=os.path.getctime)
